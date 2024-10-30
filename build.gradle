@@ -1,3 +1,4 @@
 /*
  * Kiinduló gradle file
  */
+apply plugin: 'java'
