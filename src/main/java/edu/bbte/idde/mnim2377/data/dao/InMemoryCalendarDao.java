@@ -1,7 +1,7 @@
 package edu.bbte.idde.mnim2377.data.dao;
 
+import edu.bbte.idde.mnim2377.data.exception.DataException;
 import edu.bbte.idde.mnim2377.data.model.Calendar;
-import edu.bbte.idde.mnim2377.service.exception.CalendarNotFoundException;
 
 import java.util.*;
 
@@ -18,24 +18,24 @@ public class InMemoryCalendarDao implements CalendarDao {
     }
 
     @Override
-    public void update(Calendar calendar) throws CalendarNotFoundException {
+    public void update(Calendar calendar) throws DataException {
         if (!calendarMap.containsKey(calendar.getId())) {
-            throw new CalendarNotFoundException("Cant update: ID:" + calendar.getId() + "cant be found");
+            throw new DataException("Cant update: ID:" + calendar.getId() + "cant be found");
         }
         calendarMap.put(calendar.getId(), calendar);
     }
 
     @Override
-    public void delete(String id) throws CalendarNotFoundException {
+    public void delete(String id) throws DataException {
         if (!calendarMap.containsKey(id)) {
-            throw new CalendarNotFoundException("Cant delete: ID:" + id + "cant be found");
+            throw new DataException("Cant delete: ID:" + id + "cant be found");
         }
         calendarMap.remove(id);
     }
 
-    public Calendar getCalendarById(String id) throws CalendarNotFoundException{
+    public Calendar getCalendarById(String id) throws DataException {
         if (!calendarMap.containsKey(id)) {
-            throw new CalendarNotFoundException("Cant find: ID:" + id + "cant be found");
+            throw new DataException("Cant find: ID:" + id + "cant be found");
         }
         return calendarMap.get(id);
     }

@@ -2,8 +2,8 @@ package edu.bbte.idde.mnim2377.UI;
 
 import edu.bbte.idde.mnim2377.data.dao.InMemoryCalendarDao;
 import edu.bbte.idde.mnim2377.data.model.Calendar;
-import edu.bbte.idde.mnim2377.service.CalendarService;
-import edu.bbte.idde.mnim2377.service.exception.CalendarNotFoundException;
+import edu.bbte.idde.mnim2377.service.CalendarServiceImplementation;
+import edu.bbte.idde.mnim2377.service.exception.ServiceException;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -20,13 +20,13 @@ import java.util.List;
  */
 public class CalendarApp extends JFrame {
 
-    private final CalendarService calendarService;
+    private final CalendarServiceImplementation calendarService;
     private final JTable calendarTable;
     private final DefaultTableModel tableModel;
 
     public CalendarApp() {
         // --- Initialization ---
-        calendarService = new CalendarService(new InMemoryCalendarDao());
+        calendarService = new CalendarServiceImplementation(new InMemoryCalendarDao());
 
         // --- UI Components ---
         setTitle("Calendar Management App");
@@ -77,7 +77,7 @@ public class CalendarApp extends JFrame {
                     Calendar calendarToUpdate = calendarService.getCalendarById(id);
                     // Pass the existing object to the dialog to populate it for editing
                     showCalendarDialog(calendarToUpdate);
-                } catch (CalendarNotFoundException ex) {
+                } catch (ServiceException ex) {
                     JOptionPane.showMessageDialog(this,
                             "Error: The selected item could not be found.",
                             "Not Found", JOptionPane.ERROR_MESSAGE);
@@ -104,7 +104,7 @@ public class CalendarApp extends JFrame {
                         JOptionPane.showConfirmDialog(this, "deleting id: " + id);
                         calendarService.deleteCalendar(id);
                         refreshTable();
-                    } catch (CalendarNotFoundException ex) {
+                    } catch (ServiceException ex) {
                         JOptionPane.showMessageDialog(this,
                                 "Error: Could not delete the item.",
                                 "Error", JOptionPane.ERROR_MESSAGE);
