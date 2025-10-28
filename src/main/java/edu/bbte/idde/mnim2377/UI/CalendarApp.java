@@ -72,7 +72,6 @@ public class CalendarApp extends JFrame {
             int selectedRow = calendarTable.getSelectedRow();
             if (selectedRow >= 0) {
                 String id = (String) tableModel.getValueAt(selectedRow, 0);
-                JOptionPane.showMessageDialog(this, id);
                 try {
                     Calendar calendarToUpdate = calendarService.getCalendarById(id);
                     // Pass the existing object to the dialog to populate it for editing
@@ -101,7 +100,6 @@ public class CalendarApp extends JFrame {
 
                 if (choice == JOptionPane.YES_OPTION) {
                     try {
-                        JOptionPane.showConfirmDialog(this, "deleting id: " + id);
                         calendarService.deleteCalendar(id);
                         refreshTable();
                     } catch (ServiceException ex) {
