@@ -1,6 +1,7 @@
 package edu.bbte.idde.mnim2377.UI;
 
-import edu.bbte.idde.mnim2377.data.dao.InMemoryCalendarDao;
+import edu.bbte.idde.mnim2377.data.dao.CalendarDao;
+import edu.bbte.idde.mnim2377.data.dao.DaoFactory;
 import edu.bbte.idde.mnim2377.data.model.Calendar;
 import edu.bbte.idde.mnim2377.service.CalendarServiceImplementation;
 import edu.bbte.idde.mnim2377.service.exception.ServiceException;
@@ -13,11 +14,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
-/**
- * The main application class with the Swing user interface.
- * This class is responsible for displaying the calendar data and
- * handling user interactions like adding, updating, and deleting entries.
- */
 public class CalendarApp extends JFrame {
 
     private final CalendarServiceImplementation calendarService;
@@ -25,8 +21,9 @@ public class CalendarApp extends JFrame {
     private final DefaultTableModel tableModel;
 
     public CalendarApp() {
-        // --- Initialization ---
-        calendarService = new CalendarServiceImplementation(new InMemoryCalendarDao());
+        DaoFactory daoFactory = DaoFactory.getInstance();
+        CalendarDao calendarDao = daoFactory.getCalendarDao();
+        calendarService = new CalendarServiceImplementation(calendarDao);
 
         // --- UI Components ---
         setTitle("Calendar Management App");
@@ -72,7 +69,6 @@ public class CalendarApp extends JFrame {
             int selectedRow = calendarTable.getSelectedRow();
             if (selectedRow >= 0) {
                 String id = (String) tableModel.getValueAt(selectedRow, 0);
-                JOptionPane.showMessageDialog(this, id);
                 try {
                     Calendar calendarToUpdate = calendarService.getCalendarById(id);
                     // Pass the existing object to the dialog to populate it for editing
@@ -101,7 +97,6 @@ public class CalendarApp extends JFrame {
 
                 if (choice == JOptionPane.YES_OPTION) {
                     try {
-                        JOptionPane.showConfirmDialog(this, "deleting id: " + id);
                         calendarService.deleteCalendar(id);
                         refreshTable();
                     } catch (ServiceException ex) {
@@ -115,17 +110,11 @@ public class CalendarApp extends JFrame {
             }
         });
 
-        // --- Initial Data Load ---
-        addSampleData();
         refreshTable();
 
         setVisible(true);
     }
 
-    /**
-     * Shows a dialog for adding a new entry or updating an existing one.
-     * @param calendar The calendar to edit. If null, the dialog is configured for adding a new entry.
-     */
     private void showCalendarDialog(Calendar calendar) {
         // --- Dialog Components ---
         JTextField addressField = new JTextField(20);
@@ -206,10 +195,5 @@ public class CalendarApp extends JFrame {
             };
             tableModel.addRow(row);
         }
-    }
-
-    private void addSampleData() {
-        calendarService.addCalendar(new Calendar("123 Main St", "Conference Room A", LocalDate.parse("2025-10-20"), true));
-        calendarService.addCalendar(new Calendar("456 Oak Ave", "Client Office", LocalDate.parse("2025-11-15"), false));
     }
 }

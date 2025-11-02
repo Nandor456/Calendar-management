@@ -3,7 +3,20 @@ plugins {
     id 'application'
 }
 
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/com.zaxxer/HikariCP
+    implementation group: 'com.zaxxer', name: 'HikariCP', version: '7.0.2'
+    // https://mvnrepository.com/artifact/org.postgresql/postgresql
+    runtimeOnly group: 'org.postgresql', name: 'postgresql', version: '42.7.8'
+}
+
 application {
     mainClass = 'edu.bbte.idde.mnim2377.Main'
 }
+
+apply from: './lint.gradle'
 

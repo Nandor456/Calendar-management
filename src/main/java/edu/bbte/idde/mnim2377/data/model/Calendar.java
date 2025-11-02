@@ -3,23 +3,26 @@ package edu.bbte.idde.mnim2377.data.model;
 import java.time.LocalDate;
 import java.util.*;
 
-public class Calendar {
-    private final String id;
+public class Calendar extends BaseEntity{
     private String address;
     private String location;
     private LocalDate date;
     private Boolean isOnline;
 
     public Calendar(String address, String location, LocalDate date, Boolean isOnline) {
-        this.id = UUID.randomUUID().toString();
+        super();
         this.address = address;
         this.location = location;
         this.date = date;
         this.isOnline = isOnline;
     }
 
-    public String getId() {
-        return id;
+    public Calendar(String id, String address, String location, LocalDate date, Boolean isOnline) {
+        super(id);
+        this.address = address;
+        this.location = location;
+        this.date = date;
+        this.isOnline = isOnline;
     }
 
     public String getAddress() {
