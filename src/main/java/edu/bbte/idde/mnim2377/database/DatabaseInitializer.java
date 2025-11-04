@@ -1,14 +1,14 @@
 package edu.bbte.idde.mnim2377.database;
 
 import edu.bbte.idde.mnim2377.config.DataSourceProvider;
-import edu.bbte.idde.mnim2377.data.exception.DataException;
+import edu.bbte.idde.mnim2377.data.exception.DatabaseException;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
 public class DatabaseInitializer {
 
-    public static void initializeDatabase() throws DataException {
+    public static void initializeDatabase() throws DatabaseException {
         String sql =
                 "CREATE TABLE IF NOT EXISTS calendar ("
                 + "  id VARCHAR(64) PRIMARY KEY,"
@@ -20,7 +20,7 @@ public class DatabaseInitializer {
         try (Connection conn = DataSourceProvider.getDataSource().getConnection()) {
             conn.createStatement().execute(sql);
         } catch (SQLException e) {
-            throw new DataException("Failed to initialize database", e);
+            throw new DatabaseException("Failed to initialize database", e);
         }
     }
 }
