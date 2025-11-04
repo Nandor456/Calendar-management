@@ -11,13 +11,14 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PostgresCalendarDao implements CalendarDao{
+public class PostgresCalendarDao implements CalendarDao {
     private static final Logger logger = LoggerFactory.getLogger(PostgresCalendarDao.class);
+
     @Override
     public List<Calendar> findAll() {
         String sql = "SELECT * FROM calendar";
         List<Calendar> calendars = new ArrayList<>();
-        try(Connection conn = DataSourceProvider.getDataSource().getConnection();
+        try (Connection conn = DataSourceProvider.getDataSource().getConnection();
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
@@ -61,13 +62,13 @@ public class PostgresCalendarDao implements CalendarDao{
     public void create(Calendar calendar) {
         logger.debug("Creating calendar with ID: {}", calendar.getId());
         String sql = "INSERT INTO calendar (id, address, location, date, is_online) VALUES (?, ?, ?, ?, ?)";
-        try(Connection conn = DataSourceProvider.getDataSource().getConnection();
+        try (Connection conn = DataSourceProvider.getDataSource().getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, calendar.getId());
             pstmt.setString(2, calendar.getAddress());
             pstmt.setString(3, calendar.getLocation());
             pstmt.setDate(4, Date.valueOf(calendar.getDate()));
-            pstmt.setBoolean(5, calendar.getOnline());
+            pstmt.setBoolean(5, calendar.isOnline());
             pstmt.executeUpdate();
 
             logger.info("Successfully created calendar with ID: {}", calendar.getId());
@@ -82,12 +83,12 @@ public class PostgresCalendarDao implements CalendarDao{
     public void update(Calendar calendar) throws DataException {
         logger.debug("Updating calendar with ID: {}", calendar.getId());
         String sql = "UPDATE calendar SET address = ?, location = ?, date = ?, is_online = ? WHERE id = ?";
-        try(Connection conn = DataSourceProvider.getDataSource().getConnection();
+        try (Connection conn = DataSourceProvider.getDataSource().getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, calendar.getAddress());
             pstmt.setString(2, calendar.getLocation());
             pstmt.setDate(3, Date.valueOf(calendar.getDate()));
-            pstmt.setBoolean(4, calendar.getOnline());
+            pstmt.setBoolean(4, calendar.isOnline());
             pstmt.setString(5, calendar.getId());
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows == 0) {
@@ -106,7 +107,7 @@ public class PostgresCalendarDao implements CalendarDao{
     public void delete(String id) throws DataException {
         logger.debug("Deleting calendar with ID: {}", id);
         String sql = "DELETE FROM calendar WHERE id = ?";
-        try(Connection conn = DataSourceProvider.getDataSource().getConnection();
+        try (Connection conn = DataSourceProvider.getDataSource().getConnection();
             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, id);
             int affectedRows = pstmt.executeUpdate();

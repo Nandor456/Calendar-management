@@ -5,20 +5,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class DaoFactory {
-    private static DaoFactory instance;
     private static final Logger logger = LoggerFactory.getLogger(DaoFactory.class);
+    private static final DaoFactory instance = createInstance();
+
+    private static DaoFactory createInstance() {
+        String daoType = DatabaseConfig.getDaoType();
+        if ("jdbc".equalsIgnoreCase(daoType)) {
+            logger.info("working with Postgres DAO");
+            return new PostgresCalendarDaoFactory();
+        } else {
+            logger.info("working with In-Memory DAO");
+            return new InMemoryCalendarDaoFactory();
+        }
+    }
+
 
     public static DaoFactory getInstance() {
-        if (instance == null) {
-            String daoType = DatabaseConfig.getDaoType();
-            if (daoType.equalsIgnoreCase("jdbc")) {
-                logger.info("working with Postgres DAO");
-                instance = new PostgresCalendarDaoFactory();
-            } else {
-                logger.info("working with In-Memory DAO");
-                instance = new InMemoryCalendarDaoFactory();
-            }
-        }
         return instance;
     }
 

@@ -3,8 +3,8 @@ package edu.bbte.idde.mnim2377.config;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-public class DataSourceProvider {
-    private static HikariDataSource dataSource;
+public final class DataSourceProvider {
+
     private DataSourceProvider() {
     }
 
@@ -18,16 +18,11 @@ public class DataSourceProvider {
         return new HikariDataSource(config);
     }
 
-    public static HikariDataSource getDataSource() {
-        if (dataSource == null) {
-            dataSource = configureDataSource();
-        }
-        return dataSource;
+    private static final class Holder {
+        static final HikariDataSource INSTANCE = configureDataSource();
     }
 
-    public static void close() {
-        if (!dataSource.isClosed()) {
-            dataSource.close();
-        }
+    public static HikariDataSource getDataSource() {
+        return Holder.INSTANCE;
     }
 }
