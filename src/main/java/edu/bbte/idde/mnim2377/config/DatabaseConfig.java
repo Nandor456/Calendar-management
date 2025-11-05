@@ -21,34 +21,20 @@ public class DatabaseConfig {
     }
 
 
-
-
     public static String getUser() {
         return properties.getProperty("DB_USER");
-    }
-
-    public static String getHost() {
-        return properties.getProperty("DB_HOST");
-    }
-
-    public static String getName() {
-        return properties.getProperty("DB_NAME");
     }
 
     public static String getPassword() {
         return properties.getProperty("DB_PASSWORD");
     }
 
-    public static String getPort() {
-        return properties.getProperty("DB_PORT");
+    public static String getUrl() {
+        return properties.getProperty("DB_URL");
     }
 
-    public static String getUrl() {
-        // Format: jdbc:postgresql://<host>:<port>/<databaseName>
-        return "jdbc:postgresql://"
-                + getHost() + ":"
-                + getPort() + "/"
-                + getName();
+    public static String getDriver() {
+        return properties.getProperty("DB_DRIVER");
     }
 
     public static String getDaoType() {

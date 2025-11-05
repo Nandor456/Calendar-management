@@ -13,7 +13,7 @@ public final class DataSourceProvider {
         config.setJdbcUrl(DatabaseConfig.getUrl());
         config.setUsername(DatabaseConfig.getUser());
         config.setPassword(DatabaseConfig.getPassword());
-        config.setDriverClassName("org.postgresql.Driver");
+        config.setDriverClassName(DatabaseConfig.getDriver());
         config.setMaximumPoolSize(10);
         return new HikariDataSource(config);
     }
