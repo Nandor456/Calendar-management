@@ -6,7 +6,7 @@ import edu.bbte.idde.mnim2377.data.model.Calendar;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class InMemoryCalendarDao implements CalendarDao {
+public class InMemoryDao implements CalendarDao {
     private final Map<String, Calendar> calendarMap = new ConcurrentHashMap<>();
 
     @Override

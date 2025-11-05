@@ -11,8 +11,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PostgresCalendarDao implements CalendarDao {
-    private static final Logger logger = LoggerFactory.getLogger(PostgresCalendarDao.class);
+public class JdbcDao implements CalendarDao {
+    private static final Logger logger = LoggerFactory.getLogger(JdbcDao.class);
 
     @Override
     public List<Calendar> findAll() {

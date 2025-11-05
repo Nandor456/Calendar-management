@@ -12,10 +12,10 @@ public abstract class DaoFactory {
         String daoType = DatabaseConfig.getDaoType();
         if ("jdbc".equalsIgnoreCase(daoType)) {
             logger.info("working with Postgres DAO");
-            return new PostgresCalendarDaoFactory();
+            return new JdbcDaoFactory();
         } else {
             logger.info("working with In-Memory DAO");
-            return new InMemoryCalendarDaoFactory();
+            return new InMemoryDaoFactory();
         }
     }
 

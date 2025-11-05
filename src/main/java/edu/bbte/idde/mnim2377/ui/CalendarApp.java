@@ -126,7 +126,7 @@ public class CalendarApp extends JFrame {
             }
 
         } catch (ServiceException ex) {
-            showError("Error updating item: " + ex.getMessage(), "Error");
+            showError("Error updating item: " + ex.getMessage());
             refreshTable(); // Refresh in case the item was deleted by another user
         }
     }
@@ -153,13 +153,13 @@ public class CalendarApp extends JFrame {
                 calendarService.deleteCalendar(id);
                 refreshTable();
             } catch (ServiceException ex) {
-                showError("Error: Could not delete the item. " + ex.getMessage(), "Error");
+                showError("Error: Could not delete the item. " + ex.getMessage());
             }
         }
     }
 
-    private void showError(String message, String title) {
-        JOptionPane.showMessageDialog(this, message, title, JOptionPane.ERROR_MESSAGE);
+    private void showError(String message) {
+        JOptionPane.showMessageDialog(this, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
     private static class NonEditableTableModel extends DefaultTableModel {
