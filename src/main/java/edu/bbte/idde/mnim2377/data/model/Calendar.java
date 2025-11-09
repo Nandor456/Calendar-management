@@ -1,25 +1,27 @@
 package edu.bbte.idde.mnim2377.data.model;
 
 import java.time.LocalDate;
-import java.util.*;
 
-public class Calendar {
-    private final String id;
+public class Calendar extends BaseEntity {
     private String address;
     private String location;
     private LocalDate date;
-    private Boolean isOnline;
+    private Boolean online;
 
-    public Calendar(String address, String location, LocalDate date, Boolean isOnline) {
-        this.id = UUID.randomUUID().toString();
+    public Calendar(String address, String location, LocalDate date, Boolean online) {
+        super();
         this.address = address;
         this.location = location;
         this.date = date;
-        this.isOnline = isOnline;
+        this.online = online;
     }
 
-    public String getId() {
-        return id;
+    public Calendar(String id, String address, String location, LocalDate date, Boolean online) {
+        super(id);
+        this.address = address;
+        this.location = location;
+        this.date = date;
+        this.online = online;
     }
 
     public String getAddress() {
@@ -46,21 +48,26 @@ public class Calendar {
         this.date = date;
     }
 
-    public Boolean getOnline() {
-        return isOnline;
+    public Boolean isOnline() {
+        return online;
     }
 
     public void setOnline(Boolean online) {
-        isOnline = online;
+        this.online = online;
     }
 
     @Override
     public String toString() {
-        return "Calendar{" +
-                "address='" + address + '\'' +
-                ", location='" + location + '\'' +
-                ", date=" + date +
-                ", isOnline=" + isOnline +
+        return "Calendar{"
+                +
+                "address='" + address + '\''
+                +
+                ", location='" + location + '\''
+                +
+                ", date=" + date
+                +
+                ", isOnline=" + online
+                +
                 '}';
     }
 }

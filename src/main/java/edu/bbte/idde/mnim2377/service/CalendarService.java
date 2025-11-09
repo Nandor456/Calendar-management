@@ -7,8 +7,12 @@ import java.util.List;
 
 public interface CalendarService {
     List<Calendar> getAllCalendars();
+
     void addCalendar(Calendar calendar);
+
     void updateCalendar(Calendar calendar) throws ServiceException;
+
     void deleteCalendar(String id) throws ServiceException;
+
     Calendar getCalendarById(String id) throws ServiceException;
 }
