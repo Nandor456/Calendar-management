@@ -38,7 +38,7 @@ public class CalendarServiceImplementation implements CalendarService {
         try {
             calendarDao.delete(id);
         } catch (DataException e) {
-            throw new ServiceException("Service exception during update", e);
+            throw new ServiceException("Service exception during delete", e);
         }
     }
 
@@ -47,7 +47,7 @@ public class CalendarServiceImplementation implements CalendarService {
         try {
             return calendarDao.getCalendarById(id);
         } catch (DataException e) {
-            throw new ServiceException("Service exception during update", e);
+            throw new ServiceException("Service exception during getting calendar", e);
         }
     }
 }
