@@ -1,43 +1,83 @@
 package edu.bbte.idde.mnim2377.backend.config;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.bbte.idde.mnim2377.backend.data.exception.DatabaseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Properties;
 
 public class DatabaseConfig {
-    private static final Properties properties = new Properties();
+    private static JsonNode config;
+    private static String activeProfile;
+    private static final Logger logger = LoggerFactory.getLogger(DatabaseConfig.class);
 
     static {
-        try (InputStream input = DatabaseConfig.class.getResourceAsStream("/db.properties")) {
+        loadConfig();
+    }
+
+    private static void loadConfig() {
+        // Determine active profile
+        activeProfile = determineActiveProfile();
+        String configFile = "/application-" + activeProfile + ".json";
+
+        logger.info("Loading configuration from: {}", configFile);
+        try (InputStream input = DatabaseConfig.class.getResourceAsStream(configFile)) {
             if (input == null) {
-                throw new DatabaseException("Unable to find db.properties");
+                throw new DatabaseException("Unable to find " + configFile);
             }
-            properties.load(input);
+
+            ObjectMapper mapper = new ObjectMapper();
+            config = mapper.readTree(input);
+
+            logger.info("Configuration loaded successfully for profile: {}", activeProfile);
         } catch (IOException e) {
             throw new DatabaseException("Failed to load database configuration", e);
         }
     }
 
+    private static String determineActiveProfile() {
+        // Check JVM property first: -Dapp.profile=prod
+        String profile = System.getProperty("app.profile");
+
+        if (profile == null || profile.isEmpty()) {
+            // Check environment variable: APP_PROFILE=prod
+            profile = System.getenv("APP_PROFILE");
+        }
+
+        if (profile == null || profile.isEmpty()) {
+            // Default profile
+            profile = "dev";
+            logger.warn("No profile specified, using default: {}", profile);
+        }
+
+        return profile;
+    }
 
     public static String getUser() {
-        return properties.getProperty("DB_USER");
+        return config.path("database").path("username").asText();
     }
 
     public static String getPassword() {
-        return properties.getProperty("DB_PASSWORD");
+        return config.path("database").path("password").asText();
     }
 
     public static String getUrl() {
-        return properties.getProperty("DB_URL");
+        logger.error("Accessing database URL: {}", config.path("database").path("url").asText());
+        return config.path("database").path("url").asText();
     }
 
     public static String getDriver() {
-        return properties.getProperty("DB_DRIVER");
+        return config.path("database").path("driver").asText();
     }
 
     public static String getDaoType() {
-        return properties.getProperty("DAO_TYPE", "INMEMORY");
+        return config.path("dao").path("implementation").asText("memory").toUpperCase();
+    }
+
+    public static int getMaxPoolSize() {
+        return config.path("connectionPool").path("maxSize").asInt(10);
     }
 }

@@ -14,7 +14,7 @@ public final class DataSourceProvider {
         config.setUsername(DatabaseConfig.getUser());
         config.setPassword(DatabaseConfig.getPassword());
         config.setDriverClassName(DatabaseConfig.getDriver());
-        config.setMaximumPoolSize(10);
+        config.setMaximumPoolSize(DatabaseConfig.getMaxPoolSize());
         return new HikariDataSource(config);
     }
 

@@ -14,10 +14,13 @@
         </encoder>
     </appender>
 
-    <root level="info">
+    <root level="OFF" />
+
+    <!-- ENABLE ONLY YOUR PACKAGE -->
+    <logger name="edu.bbte.idde.mnim2377" level="debug" additivity="false">
         <appender-ref ref="STDOUT" />
         <appender-ref ref="FILE" />
-    </root>
+    </logger>
 
     <logger name="edu.bbte.idde.mnim2377" level="debug"/>
 </configuration>

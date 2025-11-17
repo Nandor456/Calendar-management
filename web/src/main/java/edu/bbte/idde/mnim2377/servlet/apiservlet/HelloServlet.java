@@ -1,4 +1,4 @@
-package edu.bbte.idde.mnim2377.servlet;
+package edu.bbte.idde.mnim2377.servlet.apiservlet;
 
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;

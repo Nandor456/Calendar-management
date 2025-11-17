@@ -1,4 +1,4 @@
-package edu.bbte.idde.mnim2377.servlet;
+package edu.bbte.idde.mnim2377.servlet.apiservlet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -26,8 +26,8 @@ public class GetAllCalendars extends HttpServlet {
     ObjectMapper mapper;
     private static final Logger logger = LoggerFactory.getLogger(GetAllCalendars.class);
 
-
-    public GetAllCalendars() {
+    @Override
+    public void init() {
         daoFactory = DaoFactory.getInstance();
         calendarDao = daoFactory.getCalendarDao();
         service = new CalendarServiceImplementation(calendarDao);
