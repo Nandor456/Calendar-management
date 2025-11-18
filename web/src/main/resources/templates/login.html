@@ -1,15 +1,14 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login</title>
-    <link rel="stylesheet" href="../static/css/index.css">
+    <link rel="stylesheet" th:href="@{/css/index.css}">
 </head>
 <body>
 <h1>Login</h1>
 
-<!-- Display error message if present -->
 <div th:if="${error}" style="color: red; margin-bottom: 15px;">
     <p th:text="${error}"></p>
 </div>

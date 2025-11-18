@@ -6,7 +6,6 @@ import edu.bbte.idde.mnim2377.backend.data.model.Calendar;
 import edu.bbte.idde.mnim2377.backend.service.CalendarServiceImplementation;
 import edu.bbte.idde.mnim2377.backend.service.exception.ServiceException;
 import edu.bbte.idde.mnim2377.servlet.thymeleaf.ThymeleafEngineFactory;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,7 +39,7 @@ public class GetCalendars extends HttpServlet {
         Map<String, Object> model = new ConcurrentHashMap<>();
 
         model.put("calendars", list);
-        ThymeleafEngineFactory.process(req, resp, "allCalendarsView.html", model);
+        ThymeleafEngineFactory.process(req, resp, "calendarsView.html", model);
     }
 
     private void showSingleCalendar(HttpServletRequest req, HttpServletResponse resp, String id)
@@ -60,8 +59,8 @@ public class GetCalendars extends HttpServlet {
 
             logger.info("Successfully retrieved calendar: {}", calendar);
 
-            model.put("calendar", calendar);
-            ThymeleafEngineFactory.process(req, resp, "calendarByIdView.html", model);
+            model.put("calendars", calendar);
+            ThymeleafEngineFactory.process(req, resp, "calendarsView.html", model);
         } catch (ServiceException e) {
             logger.error("Error while fetching calendar with id: {}", id, e);
             model.put("errorMessage", e);
@@ -70,7 +69,7 @@ public class GetCalendars extends HttpServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String pathInfo = req.getPathInfo();
 
         if (pathInfo == null || "/".equals(pathInfo)) {

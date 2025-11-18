@@ -1,10 +1,10 @@
 <!doctype html>
-<html xmlns:th="http://www.thymeleaf.org" lang="eng">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Calendars</title>
-    <link rel="stylesheet" href="../static/css/index.css">
+    <link rel="stylesheet" th:href="@{/css/index.css}">
 </head>
 <body>
 <h1>Calendars</h1>
@@ -26,9 +26,7 @@
     </tr>
     </tbody>
 </table>
-<tr></tr>
-<button>
-    <a th:href="@{/logout}">Logout</a>
-</button>
+
+<a th:href="@{/logout}" class="btn">Logout</a>
 </body>
 </html>
