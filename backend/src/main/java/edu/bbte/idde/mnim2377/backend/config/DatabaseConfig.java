@@ -8,10 +8,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Locale;
 
 public class DatabaseConfig {
     private static JsonNode config;
-    private static String activeProfile;
     private static final Logger logger = LoggerFactory.getLogger(DatabaseConfig.class);
 
     static {
@@ -20,7 +20,7 @@ public class DatabaseConfig {
 
     private static void loadConfig() {
         // Determine active profile
-        activeProfile = determineActiveProfile();
+        String activeProfile = determineActiveProfile();
         String configFile = "/application-" + activeProfile + ".json";
 
         logger.info("Loading configuration from: {}", configFile);
@@ -74,7 +74,8 @@ public class DatabaseConfig {
     }
 
     public static String getDaoType() {
-        return config.path("dao").path("implementation").asText("memory").toUpperCase();
+        // Use a specific Locale to avoid locale-sensitive case issues (e.g. Turkish i)
+        return config.path("dao").path("implementation").asText("memory").toUpperCase(Locale.ROOT);
     }
 
     public static int getMaxPoolSize() {

@@ -7,7 +7,6 @@ import edu.bbte.idde.mnim2377.backend.data.dao.CalendarDao;
 import edu.bbte.idde.mnim2377.backend.data.dao.DaoFactory;
 import edu.bbte.idde.mnim2377.backend.data.model.Calendar;
 import edu.bbte.idde.mnim2377.backend.service.CalendarServiceImplementation;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -42,13 +41,13 @@ public class GetAllCalendars extends HttpServlet {
         try {
             jsonResult = mapper.writeValueAsString(list);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Error converting calendars to JSON", e);
         }
         return jsonResult;
     }
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         logger.debug("/calendars endpoint called");
         resp.getWriter().print(getAllCalendarsJSON());
     }

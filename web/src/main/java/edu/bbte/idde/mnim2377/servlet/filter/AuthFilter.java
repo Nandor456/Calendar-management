@@ -17,7 +17,8 @@ public class AuthFilter extends HttpFilter {
     Logger logger = LoggerFactory.getLogger(AuthFilter.class);
 
     @Override
-    public void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
+    public void doFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
+            throws IOException, ServletException {
         logger.debug("AuthFilter: Checking user authentication.");
         String path = req.getRequestURI();
         if (path.endsWith("/view/login")) {

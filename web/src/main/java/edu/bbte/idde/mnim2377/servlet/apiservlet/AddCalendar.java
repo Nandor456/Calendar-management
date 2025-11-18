@@ -69,7 +69,8 @@ public class AddCalendar extends HttpServlet {
                 Set<ConstraintViolation<RequestCalendar>> violations = validator.validate(data);
                 if (!violations.isEmpty()) {
                     res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    res.getWriter().write("{\"error\": \"Validation error: " + violations.iterator().next().getMessage() + "\"}");
+                    res.getWriter().write("{\"error\": \"Validation error: "
+                            + violations.iterator().next().getMessage() + "\"}");
                     return;
                 }
             }
@@ -82,7 +83,8 @@ public class AddCalendar extends HttpServlet {
 
         } catch (MismatchedInputException e) {
             res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            res.getWriter().write("{\"error\": \"Invalid data type for field: " + e.getPath().get(0).getFieldName() + ". " + e.getOriginalMessage() + "\"}");
+            res.getWriter().write("{\"error\": \"Invalid data type for field: "
+                    + e.getPath().getFirst().getFieldName() + ". " + e.getOriginalMessage() + "\"}");
             logger.error("Type mismatch error", e);
         } catch (JsonMappingException e) {
             res.setStatus(HttpServletResponse.SC_BAD_REQUEST);

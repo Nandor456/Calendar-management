@@ -6,7 +6,8 @@ import jakarta.servlet.http.HttpServlet;
 @WebServlet("/logout")
 public class Logout extends HttpServlet {
 
-    protected void doGet(jakarta.servlet.http.HttpServletRequest req, jakarta.servlet.http.HttpServletResponse resp) throws java.io.IOException, jakarta.servlet.ServletException {
+    protected void doGet(jakarta.servlet.http.HttpServletRequest req, jakarta.servlet.http.HttpServletResponse resp)
+            throws java.io.IOException {
         req.getSession().invalidate();
         resp.sendRedirect(req.getContextPath() + "/view/login");
     }
