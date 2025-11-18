@@ -17,6 +17,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import jakarta.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,12 +26,9 @@ import java.util.Set;
 
 @WebServlet("/addCalendar2")
 public class AddCalendar extends HttpServlet {
-    DaoFactory daoFactory;
-    CalendarDao calendarDao;
-    CalendarServiceImplementation service;
-    ObjectMapper mapper;
-    ValidatorFactory factory;
-    Validator validator;
+    private transient CalendarServiceImplementation service;
+    private transient ObjectMapper mapper;
+    private transient Validator validator;
     private static final Logger logger = LoggerFactory.getLogger(AddCalendar.class);
 
 
@@ -38,17 +36,15 @@ public class AddCalendar extends HttpServlet {
     @Override
     public void init() {
         logger.info("Initializing AddCalendar servlet");
-        //validator = factory.getValidator();
-        daoFactory = DaoFactory.getInstance();
-        calendarDao = daoFactory.getCalendarDao();
+        DaoFactory daoFactory = DaoFactory.getInstance();
+        CalendarDao calendarDao = daoFactory.getCalendarDao();
         service = new CalendarServiceImplementation(calendarDao);
         try {
-            factory = Validation.buildDefaultValidatorFactory();
+            ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
             validator = factory.getValidator();
             logger.info("Validator initialized successfully");
-        } catch (Exception e) {
+        } catch (ValidationException e) {
             logger.error("Failed to initialize validator", e);
-            validator = null; // Set to null so we can handle it in doPost
         }
         mapper = new ObjectMapper().registerModule(new JavaTimeModule())
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)

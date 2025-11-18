@@ -1,8 +1,5 @@
 package edu.bbte.idde.mnim2377.servlet.templateservlet;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import edu.bbte.idde.mnim2377.backend.data.dao.CalendarDao;
 import edu.bbte.idde.mnim2377.backend.data.dao.DaoFactory;
 import edu.bbte.idde.mnim2377.backend.data.model.Calendar;
@@ -26,19 +23,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class GetCalendars extends HttpServlet {
     private static final Logger logger = LoggerFactory.getLogger(GetCalendars.class);
 
-    DaoFactory daoFactory;
-    CalendarDao calendarDao;
-    CalendarServiceImplementation service;
-    ObjectMapper mapper;
+    private transient CalendarServiceImplementation service;
 
     @Override
     public void init() {
-        daoFactory = DaoFactory.getInstance();
-        calendarDao = daoFactory.getCalendarDao();
+        DaoFactory daoFactory = DaoFactory.getInstance();
+        CalendarDao calendarDao = daoFactory.getCalendarDao();
         service = new CalendarServiceImplementation(calendarDao);
-        mapper = new ObjectMapper().registerModule(new JavaTimeModule())
-                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-                .enable(SerializationFeature.INDENT_OUTPUT);
         logger.info("GetCalendarById servlet initialized");
         ThymeleafEngineFactory.buildEngine(getServletContext());
     }
@@ -82,7 +73,7 @@ public class GetCalendars extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String pathInfo = req.getPathInfo();
 
-        if (pathInfo == null || pathInfo.equals("/")) {
+        if (pathInfo == null || "/".equals(pathInfo)) {
             showAllCalendars(req, resp);
         } else {
             String id = pathInfo.substring(1);

@@ -19,16 +19,14 @@ import java.util.List;
 
 @WebServlet("/calendars")
 public class GetAllCalendars extends HttpServlet {
-    DaoFactory daoFactory;
-    CalendarDao calendarDao;
-    CalendarServiceImplementation service;
-    ObjectMapper mapper;
+    private transient CalendarServiceImplementation service;
+    private transient ObjectMapper mapper;
     private static final Logger logger = LoggerFactory.getLogger(GetAllCalendars.class);
 
     @Override
     public void init() {
-        daoFactory = DaoFactory.getInstance();
-        calendarDao = daoFactory.getCalendarDao();
+        DaoFactory daoFactory = DaoFactory.getInstance();
+        CalendarDao calendarDao = daoFactory.getCalendarDao();
         service = new CalendarServiceImplementation(calendarDao);
         mapper = new ObjectMapper().registerModule(new JavaTimeModule())
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)

@@ -44,8 +44,8 @@ public class Login extends HttpServlet {
         Map<String, Object> model = new ConcurrentHashMap<>();
 
         // Validate input
-        if (username == null || username.trim().isEmpty()
-                || password == null || password.trim().isEmpty()) {
+        if (username == null || username.isBlank()
+                || password == null || password.isBlank()) {
             logger.warn("Login attempt with empty credentials");
             model.put("error", "Username and password are required");
             ThymeleafEngineFactory.process(req, resp, "login.html", model);

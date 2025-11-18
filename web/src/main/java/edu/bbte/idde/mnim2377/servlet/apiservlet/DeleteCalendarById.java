@@ -1,6 +1,5 @@
 package edu.bbte.idde.mnim2377.servlet.apiservlet;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import edu.bbte.idde.mnim2377.backend.data.dao.CalendarDao;
 import edu.bbte.idde.mnim2377.backend.data.dao.DaoFactory;
 import edu.bbte.idde.mnim2377.backend.service.CalendarServiceImplementation;
@@ -18,20 +17,17 @@ import java.io.IOException;
 public class DeleteCalendarById extends HttpServlet {
     private static final Logger logger = LoggerFactory.getLogger(DeleteCalendarById.class);
 
-    DaoFactory daoFactory;
-    CalendarDao calendarDao;
-    CalendarServiceImplementation service;
-    ObjectMapper mapper;
+    private transient CalendarServiceImplementation service;
 
     @Override
     public void init() {
-        daoFactory = DaoFactory.getInstance();
-        calendarDao = daoFactory.getCalendarDao();
+        DaoFactory daoFactory = DaoFactory.getInstance();
+        CalendarDao calendarDao = daoFactory.getCalendarDao();
         service = new CalendarServiceImplementation(calendarDao);
-        mapper = new ObjectMapper();
         logger.info("DeleteCalendarById servlet initialized");
     }
 
+    @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String id = req.getParameter("id");
         logger.debug("Received request to delete calendar with id: {}", id);
@@ -46,7 +42,7 @@ public class DeleteCalendarById extends HttpServlet {
             service.deleteCalendar(id);
             logger.info("Successfully deleted calendar with id: {}", id);
             resp.setStatus(HttpServletResponse.SC_OK);
-            resp.getWriter().write("{\"Successfully deleted calendar: " + id + "\"}");
+            resp.getWriter().write("{\"message\": \"Successfully deleted calendar: " + id + "\"}");
 
         } catch (ServiceException e) {
             logger.error("Error deleting calendar with id: {}", id, e);

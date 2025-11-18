@@ -17,6 +17,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import jakarta.validation.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,17 +29,14 @@ import java.util.stream.Collectors;
 public class UpdateCalendarById extends HttpServlet {
     private static final Logger logger = LoggerFactory.getLogger(UpdateCalendarById.class);
 
-    DaoFactory daoFactory;
-    CalendarDao calendarDao;
-    CalendarServiceImplementation service;
-    ObjectMapper mapper;
-    ValidatorFactory factory;
-    Validator validator;
+    private transient CalendarServiceImplementation service;
+    private transient ObjectMapper mapper;
+    private transient Validator validator;
 
     @Override
     public void init() {
-        daoFactory = DaoFactory.getInstance();
-        calendarDao = daoFactory.getCalendarDao();
+        DaoFactory daoFactory = DaoFactory.getInstance();
+        CalendarDao calendarDao = daoFactory.getCalendarDao();
         service = new CalendarServiceImplementation(calendarDao);
         mapper = new ObjectMapper().registerModule(new JavaTimeModule())
                 .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
@@ -46,12 +44,11 @@ public class UpdateCalendarById extends HttpServlet {
                 .disable(MapperFeature.ALLOW_COERCION_OF_SCALARS)
                 .enable(DeserializationFeature.FAIL_ON_NULL_FOR_PRIMITIVES);
         try {
-            factory = Validation.buildDefaultValidatorFactory();
+            ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
             validator = factory.getValidator();
             logger.info("Validator initialized successfully");
-        } catch (Exception e) {
+        } catch (ValidationException e) {
             logger.error("Failed to initialize validator", e);
-            validator = null; // Set to null so we can handle it in doPost
         }
     }
 
@@ -94,7 +91,7 @@ public class UpdateCalendarById extends HttpServlet {
 
             logger.info("Successfully updated calendar with id: {}", id);
             res.setStatus(HttpServletResponse.SC_OK);
-            res.getWriter().write("{\"Successfully updated calendar: " + id + "\"}");
+            res.getWriter().write("{\"message\": \"Successfully updated calendar: " + id + "\"}");
         } catch (ServiceException e) {
             logger.error("Error updating calendar with id: {}", id, e);
             res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

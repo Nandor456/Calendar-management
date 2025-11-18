@@ -8,7 +8,6 @@ public final class DataSourceProvider {
     private DataSourceProvider() {
     }
 
-    // Builds the HikariDataSource from configuration. Called once by Holder class for lazy, thread-safe init.
     private static HikariDataSource configureDataSource() {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(DatabaseConfig.getUrl());
@@ -19,7 +18,6 @@ public final class DataSourceProvider {
         return new HikariDataSource(config);
     }
 
-    // Initialization-on-demand holder idiom ensures thread-safe lazy instantiation without synchronization.
     private static final class Holder {
         static final HikariDataSource INSTANCE = configureDataSource();
     }
