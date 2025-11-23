@@ -1,6 +1,7 @@
 package edu.bbte.idde.mnim2377.backend.data.model;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 public class Calendar extends BaseEntity {
     private String address;
@@ -16,7 +17,7 @@ public class Calendar extends BaseEntity {
         this.online = online;
     }
 
-    public Calendar(String id, String address, String location, LocalDate date, Boolean online) {
+    public Calendar(UUID id, String address, String location, LocalDate date, Boolean online) {
         super(id);
         this.address = address;
         this.location = location;

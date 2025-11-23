@@ -7,13 +7,12 @@ subprojects {
     }
 
     dependencies {
-        // https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+        // Logging API needed at compile time for LoggerFactory and Logger
         implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.17'
-        // https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
-        implementation group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.21'
-        // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+        // Logging backend only needed at runtime
+        runtimeOnly group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.21'
+        // Jackson used directly in source (ObjectMapper, modules) so needs compile scope
         implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.20.1'
-        // https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310
         implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.20.1'
     }
 }

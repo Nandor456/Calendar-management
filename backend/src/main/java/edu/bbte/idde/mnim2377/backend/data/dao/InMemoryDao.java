@@ -5,9 +5,10 @@ import edu.bbte.idde.mnim2377.backend.data.model.Calendar;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.UUID;
 
 public class InMemoryDao implements CalendarDao {
-    private final Map<String, Calendar> calendarMap = new ConcurrentHashMap<>();
+    private final Map<UUID, Calendar> calendarMap = new ConcurrentHashMap<>();
 
     @Override
     public List<Calendar> findAll() {
@@ -28,7 +29,7 @@ public class InMemoryDao implements CalendarDao {
     }
 
     @Override
-    public void delete(String id) throws DataException {
+    public void delete(UUID id) throws DataException {
         if (!calendarMap.containsKey(id)) {
             throw new DataException("Cant delete: ID:" + id + "cant be found");
         }
@@ -36,7 +37,7 @@ public class InMemoryDao implements CalendarDao {
     }
 
     @Override
-    public Calendar getCalendarById(String id) throws DataException {
+    public Calendar getCalendarById(UUID id) throws DataException {
         if (!calendarMap.containsKey(id)) {
             throw new DataException("Cant find: ID:" + id + "cant be found");
         }

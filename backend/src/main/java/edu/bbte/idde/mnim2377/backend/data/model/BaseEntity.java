@@ -1,17 +1,20 @@
 package edu.bbte.idde.mnim2377.backend.data.model;
 
+import java.util.Objects;
+import java.util.UUID;
+
 public abstract class BaseEntity {
-    protected String id;
+    protected final UUID id;
 
     public BaseEntity() {
-        this.id = java.util.UUID.randomUUID().toString();
+        this.id = UUID.randomUUID();
     }
 
-    protected BaseEntity(String id) {
-        this.id = id;
+    protected BaseEntity(UUID id) {
+        this.id = Objects.requireNonNull(id, "id must not be null");
     }
 
-    public String getId() {
+    public UUID getId() {
         return id;
     }
 

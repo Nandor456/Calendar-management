@@ -5,6 +5,7 @@ import edu.bbte.idde.mnim2377.backend.data.dao.DaoFactory;
 import edu.bbte.idde.mnim2377.backend.data.model.Calendar;
 import edu.bbte.idde.mnim2377.backend.service.CalendarServiceImplementation;
 import edu.bbte.idde.mnim2377.backend.service.exception.ServiceException;
+import edu.bbte.idde.mnim2377.backend.service.exception.ServiceNotFoundException; // added import
 import edu.bbte.idde.mnim2377.desktop.exception.UiException;
 
 import javax.swing.*;
@@ -12,6 +13,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 
 public class CalendarApp extends JFrame {
 
@@ -110,12 +112,8 @@ public class CalendarApp extends JFrame {
         }
 
         try {
-            String id = (String) tableModel.getValueAt(selectedRow, 0);
+            UUID id = (UUID) tableModel.getValueAt(selectedRow, 0);
             Calendar calendarToUpdate = calendarService.getCalendarById(id);
-
-            if (calendarToUpdate == null) {
-                throw new UiException("Selected item no longer exists.");
-            }
 
             CalendarDialog dialog = new CalendarDialog(this, "Update Calendar Entry", calendarToUpdate);
             dialog.setVisible(true);
@@ -124,10 +122,15 @@ public class CalendarApp extends JFrame {
                 calendarService.updateCalendar(dialog.getCalendar());
                 refreshTable();
             }
-
+        } catch (ServiceNotFoundException nf) {
+            showError("Selected calendar entry was not found (maybe deleted by another user)."
+                    + System.lineSeparator() + nf.getMessage());
+            refreshTable();
         } catch (ServiceException ex) {
             showError("Error updating item: " + ex.getMessage());
-            refreshTable(); // Refresh in case the item was deleted by another user
+            refreshTable();
+        } catch (UiException ui) {
+            showError(ui.getMessage());
         }
     }
 
@@ -140,7 +143,7 @@ public class CalendarApp extends JFrame {
             return;
         }
 
-        String id = (String) tableModel.getValueAt(selectedRow, 0);
+        UUID id = (UUID) tableModel.getValueAt(selectedRow, 0);
         String address = (String) tableModel.getValueAt(selectedRow, 1);
 
         int choice = JOptionPane.showConfirmDialog(this,
@@ -151,6 +154,9 @@ public class CalendarApp extends JFrame {
         if (choice == JOptionPane.YES_OPTION) {
             try {
                 calendarService.deleteCalendar(id);
+                refreshTable();
+            } catch (ServiceNotFoundException nf) {
+                showError("Calendar entry already deleted: " + nf.getMessage());
                 refreshTable();
             } catch (ServiceException ex) {
                 showError("Error: Could not delete the item. " + ex.getMessage());
@@ -170,7 +176,6 @@ public class CalendarApp extends JFrame {
 
         @Override
         public boolean isCellEditable(int row, int column) {
-            // Always return false to make the table read-only
             return false;
         }
     }

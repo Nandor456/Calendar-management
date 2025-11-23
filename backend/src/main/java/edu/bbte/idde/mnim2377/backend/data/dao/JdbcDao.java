@@ -3,6 +3,7 @@ package edu.bbte.idde.mnim2377.backend.data.dao;
 import edu.bbte.idde.mnim2377.backend.config.DataSourceProvider;
 import edu.bbte.idde.mnim2377.backend.data.exception.DataException;
 import edu.bbte.idde.mnim2377.backend.data.exception.DatabaseException;
+import edu.bbte.idde.mnim2377.backend.data.exception.NotFoundException;
 import edu.bbte.idde.mnim2377.backend.data.model.Calendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class JdbcDao implements CalendarDao {
     private static final Logger logger = LoggerFactory.getLogger(JdbcDao.class);
@@ -34,13 +36,13 @@ public class JdbcDao implements CalendarDao {
     }
 
     @Override
-    public Calendar getCalendarById(String id) throws DataException {
+    public Calendar getCalendarById(UUID id) throws DataException {
         String sql = "SELECT * FROM calendar WHERE id = ?";
         logger.debug("Fetching calendar with ID: {}", id);
 
         try (Connection conn = DataSourceProvider.getDataSource().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, id);
+            pstmt.setString(1, id.toString());
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
@@ -48,7 +50,7 @@ public class JdbcDao implements CalendarDao {
                     return mapResultSetToCalendar(rs);
                 } else {
                     logger.warn("No calendar found with ID: {}", id);
-                    throw new DataException("No calendar found with ID: " + id);
+                    throw new NotFoundException("No calendar found with ID: " + id);
                 }
             }
 
@@ -63,8 +65,8 @@ public class JdbcDao implements CalendarDao {
         logger.debug("Creating calendar with ID: {}", calendar.getId());
         String sql = "INSERT INTO calendar (id, address, location, date, is_online) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DataSourceProvider.getDataSource().getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, calendar.getId());
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, calendar.getId().toString());
             pstmt.setString(2, calendar.getAddress());
             pstmt.setString(3, calendar.getLocation());
             pstmt.setDate(4, Date.valueOf(calendar.getDate()));
@@ -89,11 +91,11 @@ public class JdbcDao implements CalendarDao {
             pstmt.setString(2, calendar.getLocation());
             pstmt.setDate(3, Date.valueOf(calendar.getDate()));
             pstmt.setBoolean(4, calendar.isOnline());
-            pstmt.setString(5, calendar.getId());
+            pstmt.setString(5, calendar.getId().toString());
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows == 0) {
                 logger.warn("Cannot update: calendar with ID {} not found", calendar.getId());
-                throw new DataException("Cant update: ID:" + calendar.getId() + "cant be found");
+                throw new NotFoundException("Cant update: ID:" + calendar.getId() + "cant be found");
             }
             logger.info("Successfully updated calendar with ID: {}", calendar.getId());
         } catch (SQLException e) {
@@ -104,16 +106,16 @@ public class JdbcDao implements CalendarDao {
     }
 
     @Override
-    public void delete(String id) throws DataException {
+    public void delete(UUID id) throws DataException {
         logger.debug("Deleting calendar with ID: {}", id);
         String sql = "DELETE FROM calendar WHERE id = ?";
         try (Connection conn = DataSourceProvider.getDataSource().getConnection();
-            PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, id);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, id.toString());
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows == 0) {
                 logger.warn("Cannot delete: calendar with ID {} not found", id);
-                throw new DataException("Cant delete: ID:" + id + "cant be found");
+                throw new NotFoundException("Cant delete: ID:" + id + "cant be found");
             }
             logger.info("Successfully deleted calendar with ID: {}", id);
 
@@ -125,7 +127,7 @@ public class JdbcDao implements CalendarDao {
 
     private Calendar mapResultSetToCalendar(ResultSet rs) throws SQLException {
         return new Calendar(
-                rs.getString("id"),
+                UUID.fromString(rs.getString("id")),
                 rs.getString("address"),
                 rs.getString("location"),
                 rs.getDate("date").toLocalDate(),

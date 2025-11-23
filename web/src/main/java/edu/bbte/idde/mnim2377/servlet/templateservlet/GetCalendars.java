@@ -5,6 +5,7 @@ import edu.bbte.idde.mnim2377.backend.data.dao.DaoFactory;
 import edu.bbte.idde.mnim2377.backend.data.model.Calendar;
 import edu.bbte.idde.mnim2377.backend.service.CalendarServiceImplementation;
 import edu.bbte.idde.mnim2377.backend.service.exception.ServiceException;
+import edu.bbte.idde.mnim2377.backend.service.exception.ServiceNotFoundException;
 import edu.bbte.idde.mnim2377.servlet.thymeleaf.ThymeleafEngineFactory;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -16,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @WebServlet({"/view/calendars", "/view/calendars/*"})
@@ -42,28 +44,40 @@ public class GetCalendars extends HttpServlet {
         ThymeleafEngineFactory.process(req, resp, "calendarsView.html", model);
     }
 
-    private void showSingleCalendar(HttpServletRequest req, HttpServletResponse resp, String id)
+    private void showSingleCalendar(HttpServletRequest req, HttpServletResponse resp, String idParam)
             throws IOException {
         Map<String, Object> model = new ConcurrentHashMap<>();
 
-        if (id == null || id.isEmpty()) {
+        if (idParam == null || idParam.isEmpty()) {
             logger.warn("Request received without id parameter");
             model.put("errorMessage", "No id parameter provided");
             ThymeleafEngineFactory.process(req, resp, "errorView.html", model);
             return;
         }
-
+        UUID id;
+        try {
+            id = UUID.fromString(idParam);
+        } catch (IllegalArgumentException e) {
+            logger.warn("Invalid UUID format: {}", idParam);
+            model.put("errorMessage", "Invalid UUID format: " + idParam);
+            ThymeleafEngineFactory.process(req, resp, "errorView.html", model);
+            return;
+        }
         logger.debug("Fetching calendar with id: {}", id);
         try {
             Calendar calendar = service.getCalendarById(id);
-
             logger.info("Successfully retrieved calendar: {}", calendar);
-
             model.put("calendars", calendar);
             ThymeleafEngineFactory.process(req, resp, "calendarsView.html", model);
+        } catch (ServiceNotFoundException e) {
+            logger.warn("Calendar not found: {}", id);
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            model.put("errorMessage", e.getMessage());
+            ThymeleafEngineFactory.process(req, resp, "errorView.html", model);
         } catch (ServiceException e) {
             logger.error("Error while fetching calendar with id: {}", id, e);
-            model.put("errorMessage", e);
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            model.put("errorMessage", e.getMessage());
             ThymeleafEngineFactory.process(req, resp, "errorView.html", model);
         }
     }
@@ -71,12 +85,11 @@ public class GetCalendars extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String pathInfo = req.getPathInfo();
-
         if (pathInfo == null || "/".equals(pathInfo)) {
             showAllCalendars(req, resp);
         } else {
-            String id = pathInfo.substring(1);
-            showSingleCalendar(req, resp, id);
+            String idSegment = pathInfo.substring(1);
+            showSingleCalendar(req, resp, idSegment);
         }
 
     }

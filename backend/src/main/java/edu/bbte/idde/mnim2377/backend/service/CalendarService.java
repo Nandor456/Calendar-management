@@ -4,6 +4,7 @@ import edu.bbte.idde.mnim2377.backend.data.model.Calendar;
 import edu.bbte.idde.mnim2377.backend.service.exception.ServiceException;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface CalendarService {
     List<Calendar> getAllCalendars();
@@ -12,7 +13,7 @@ public interface CalendarService {
 
     void updateCalendar(Calendar calendar) throws ServiceException;
 
-    void deleteCalendar(String id) throws ServiceException;
+    void deleteCalendar(UUID id) throws ServiceException;
 
-    Calendar getCalendarById(String id) throws ServiceException;
+    Calendar getCalendarById(UUID id) throws ServiceException;
 }

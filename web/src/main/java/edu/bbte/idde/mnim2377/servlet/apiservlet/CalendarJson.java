@@ -9,6 +9,7 @@ import edu.bbte.idde.mnim2377.backend.data.dao.DaoFactory;
 import edu.bbte.idde.mnim2377.backend.data.model.Calendar;
 import edu.bbte.idde.mnim2377.backend.service.CalendarServiceImplementation;
 import edu.bbte.idde.mnim2377.backend.service.exception.ServiceException;
+import edu.bbte.idde.mnim2377.backend.service.exception.ServiceNotFoundException;
 import edu.bbte.idde.mnim2377.servlet.dto.RequestCalendar;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @WebServlet("/calendars")
@@ -53,38 +55,53 @@ public class CalendarJson extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
-        String id = req.getParameter("id");
-        if (id == null) {
+        String idParam = req.getParameter("id");
+        if (idParam == null) {
             logger.debug("/calendars endpoint called");
-            // write the actual list as JSON using the mapper
             mapper.writeValue(resp.getWriter(), service.getAllCalendars());
             return;
         }
-
+        UUID id;
+        try {
+            id = UUID.fromString(idParam);
+        } catch (IllegalArgumentException e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            mapper.writeValue(resp.getWriter(), "Invalid UUID format: " + idParam);
+            return;
+        }
         logger.debug("Fetching calendar with id: {}", id);
 
         try {
             Calendar calendar = service.getCalendarById(id);
-
             logger.info("Successfully retrieved calendar: {}", calendar);
-            // write the calendar object directly as JSON
             mapper.writeValue(resp.getWriter(), calendar);
-
+        } catch (ServiceNotFoundException e) {
+            logger.warn("Calendar not found: {}", id);
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            mapper.writeValue(resp.getWriter(), e.getMessage());
         } catch (ServiceException e) {
-            logger.error("Error while fetching calendar with id: {}", id, e);
-            resp.setStatus(404);
-            mapper.writeValue(resp.getWriter(), "Not Found");
+            logger.error("Internal error while fetching calendar with id: {}", id, e);
+            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            mapper.writeValue(resp.getWriter(), "Internal server error");
         }
     }
 
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String id = req.getParameter("id");
-        logger.debug("Received request to delete calendar with id: {}", id);
-        if (id == null || id.isEmpty()) {
+        String idParam = req.getParameter("id");
+        logger.debug("Received request to delete calendar with id: {}", idParam);
+        if (idParam == null || idParam.isEmpty()) {
             logger.warn("Request received without id parameter");
             resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             mapper.writeValue(resp.getWriter(), "Missing id parameter");
+            return;
+        }
+        UUID id;
+        try {
+            id = UUID.fromString(idParam);
+        } catch (IllegalArgumentException e) {
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            mapper.writeValue(resp.getWriter(), "Invalid UUID format: " + idParam);
             return;
         }
         resp.setContentType("application/json");
@@ -93,7 +110,10 @@ public class CalendarJson extends HttpServlet {
             logger.info("Successfully deleted calendar with id: {}", id);
             resp.setStatus(HttpServletResponse.SC_OK);
             mapper.writeValue(resp.getWriter(), "Successfully deleted calendar: " + id);
-
+        } catch (ServiceNotFoundException e) {
+            logger.warn("Deletion failed, calendar not found: {}", id);
+            resp.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            mapper.writeValue(resp.getWriter(), e.getMessage());
         } catch (ServiceException e) {
             logger.error("Error deleting calendar with id: {}", id, e);
             resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -101,57 +121,77 @@ public class CalendarJson extends HttpServlet {
         }
     }
 
+    private RequestCalendar parseRequest(HttpServletRequest req)
+            throws IOException {
+        return mapper.readValue(req.getInputStream(), RequestCalendar.class);
+    }
+
+    private boolean validate(RequestCalendar data, HttpServletResponse res) throws IOException {
+        if (validator == null) {
+            return true;
+        }
+        Set<ConstraintViolation<RequestCalendar>> violations = validator.validate(data);
+        if (!violations.isEmpty()) {
+            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            String errors = violations.stream()
+                    .map(v -> v.getPropertyPath() + ": " + v.getMessage())
+                    .collect(Collectors.joining(", "));
+            mapper.writeValue(res.getWriter(),
+                    "Validation failed: " + errors);
+            return false;
+        }
+        return true;
+    }
+
+    private void performUpdate(UUID id, RequestCalendar data, HttpServletResponse res)
+            throws ServiceException, IOException {
+        Calendar calendar = service.getCalendarById(id);
+        Calendar newCalendar = new Calendar(calendar.getId(), data.address, data.location, data.date, data.online);
+        service.updateCalendar(newCalendar);
+        logger.info("Successfully updated calendar with id: {}", id);
+        res.setStatus(HttpServletResponse.SC_OK);
+        mapper.writeValue(res.getWriter(),
+                "Successfully updated calendar: " + id);
+    }
+
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse res) throws IOException {
-        String id = req.getParameter("id");
+        String idParam = req.getParameter("id");
         res.setContentType("application/json");
-        logger.debug("Received request to update calendar with id: {}", id);
-        if (id == null || id.isEmpty()) {
+        logger.debug("Received request to update calendar with id: {}", idParam);
+        if (idParam == null || idParam.isEmpty()) {
             logger.warn("Request received without id parameter");
             res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             mapper.writeValue(res.getWriter(), "Missing id parameter");
             return;
         }
+        UUID id;
         try {
-            RequestCalendar data = mapper.readValue(req.getInputStream(), RequestCalendar.class);
-
-            if (validator != null) {
-                Set<ConstraintViolation<RequestCalendar>> violations = validator.validate(data);
-                if (!violations.isEmpty()) {
-                    res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                    String errors = violations.stream()
-                            .map(v -> v.getPropertyPath() + ": " + v.getMessage())
-                            .collect(Collectors.joining(", "));
-                    mapper.writeValue(res.getWriter(), "Validation failed: " + errors);
-                    return;
-                }
-            }
-
-            Calendar calendar = service.getCalendarById(id);
-            if (calendar == null) {
-                logger.warn("Calendar with id {} not found", id);
-                res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                mapper.writeValue(res.getWriter(), "Calendar not found with id: " + id);
+            id = UUID.fromString(idParam);
+        } catch (IllegalArgumentException e) {
+            res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            mapper.writeValue(res.getWriter(), "Invalid UUID format: " + idParam);
+            return;
+        }
+        try {
+            RequestCalendar data = parseRequest(req);
+            if (!validate(data, res)) {
                 return;
             }
-
-            Calendar newCalendar = new Calendar(calendar.getId(), data.address, data.location, data.date, data.online);
-            service.updateCalendar(newCalendar);
-
-            logger.info("Successfully updated calendar with id: {}", id);
-            res.setStatus(HttpServletResponse.SC_OK);
-            mapper.writeValue(res.getWriter(), "Successfully updated calendar: " + id);
+            performUpdate(id, data, res);
+        } catch (ServiceNotFoundException e) {
+            logger.warn("Calendar not found for update: {}", id);
+            res.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            mapper.writeValue(res.getWriter(), e.getMessage());
         } catch (ServiceException e) {
             logger.error("Error updating calendar with id: {}", id, e);
             res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             mapper.writeValue(res.getWriter(), "Failed to update calendar: " + e.getMessage());
         } catch (JsonMappingException e) {
-            // JSON structure issues
             res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             mapper.writeValue(res.getWriter(), "Invalid JSON structure");
             logger.error("JSON mapping error", e);
         } catch (JsonParseException e) {
-            // Malformed JSON
             res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             mapper.writeValue(res.getWriter(), "Malformed JSON");
             logger.error("JSON parse error", e);
