@@ -1,0 +1,11 @@
+{
+  "dao": {
+    "implementation": "jdbc"
+  },
+  "database": {
+    "username" : "postgres",
+    "password": "Victus",
+    "url" : "jdbc:postgresql://localhost:5432/idde",
+    "driver" : "org.postgresql.Driver"
+  }
+}

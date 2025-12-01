@@ -1,0 +1,32 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Calendars</title>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+</head>
+<body>
+<h1>Calendars</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Address</th>
+        <th>Location</th>
+        <th>Date</th>
+        <th>online</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="cal : ${calendars}">
+        <td th:text="${cal.address}">1</td>
+        <td th:text="${cal.location}">Sample</td>
+        <td th:text="${cal.date}">Owner</td>
+        <td th:text="${cal.online}">Owner</td>
+    </tr>
+    </tbody>
+</table>
+
+<a th:href="@{/logout}" class="btn">Logout</a>
+</body>
+</html>

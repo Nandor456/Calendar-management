@@ -1,0 +1,11 @@
+plugins {
+    id 'application'
+}
+
+dependencies {
+    implementation project(':backend')
+}
+
+application {
+    mainClass = 'edu.bbte.idde.mnim2377.desktop.Main'
+}

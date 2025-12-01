@@ -1,1 +1,5 @@
 rootProject.name = 'mnim2377-idde'
+
+include 'backend'
+include 'desktop'
+include 'web'
