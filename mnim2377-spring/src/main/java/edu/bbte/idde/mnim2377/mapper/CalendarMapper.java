@@ -1,16 +1,24 @@
 package edu.bbte.idde.mnim2377.mapper;
 
-import edu.bbte.idde.mnim2377.dto.CalendarDTO;
+import edu.bbte.idde.mnim2377.dto.CalendarDto;
+import edu.bbte.idde.mnim2377.dto.CalendarDtoExtended;
 import edu.bbte.idde.mnim2377.model.Calendar;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.List;
+import java.util.UUID;
 
 @Mapper(componentModel = "spring")
 public interface CalendarMapper {
-    CalendarDTO toDto(Calendar calendar);
+    CalendarDtoExtended toDto(Calendar calendar);
 
-    Calendar toModel(CalendarDTO calendarDto);
+    // Used for Lists (GET /calendars)
+    List<CalendarDtoExtended> toDtos(List<Calendar> calendars);
 
-    List<CalendarDTO> toDtos(List<Calendar> calendars);
+    // Used for CREATE (POST) - No ID in input
+    @Mapping(target = "id", ignore = true)
+    Calendar toModel(CalendarDto calendarDto);
+
+    Calendar toModel(UUID id, CalendarDto calendarDto);
 }

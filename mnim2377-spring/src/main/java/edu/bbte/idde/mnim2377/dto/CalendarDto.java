@@ -1,14 +1,13 @@
 package edu.bbte.idde.mnim2377.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Data
-public class CalendarDTO {
-    private UUID id;
+public class CalendarDto {
 
     @NotBlank(message = "Address cannot be blank")
     private String address;
@@ -16,9 +15,9 @@ public class CalendarDTO {
     @NotBlank(message = "Location cannot be blank")
     private String location;
 
-    @NotBlank(message = "Date cannot be blank")
+    @NotNull(message = "Date cannot be null")
     private LocalDate date;
 
-    @NotBlank(message = "Online status cannot be blank")
+    @NotNull(message = "Online status cannot be blank")
     private Boolean online;
 }

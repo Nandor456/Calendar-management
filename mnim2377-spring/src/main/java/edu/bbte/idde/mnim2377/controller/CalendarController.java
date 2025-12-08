@@ -1,7 +1,8 @@
 package edu.bbte.idde.mnim2377.controller;
 
 
-import edu.bbte.idde.mnim2377.dto.CalendarDTO;
+import edu.bbte.idde.mnim2377.dto.CalendarDto;
+import edu.bbte.idde.mnim2377.dto.CalendarDtoExtended;
 import edu.bbte.idde.mnim2377.mapper.CalendarMapper;
 import edu.bbte.idde.mnim2377.model.Calendar;
 import edu.bbte.idde.mnim2377.service.CalendarService;
@@ -28,22 +29,23 @@ public class CalendarController {
     }
 
     @GetMapping
-    public List<CalendarDTO> getAllCalendars() {
+    public List<CalendarDtoExtended> getAllCalendars() {
         log.info("REST request to get all calendars");
         return calendarMapper.toDtos(calendarService.getAllCalendars());
     }
 
     @GetMapping("/{id}")
-    public CalendarDTO getCalendarById(@PathVariable UUID id) throws ServiceException {
+    public CalendarDtoExtended getCalendarById(@PathVariable UUID id) throws ServiceException {
         log.info("REST request to get calendar by ID: {}", id);
         return calendarMapper.toDto(calendarService.getCalendarById(id));
     }
 
     @PostMapping
-    public ResponseEntity<CalendarDTO> createCalendar(@Valid @RequestBody CalendarDTO calendarDto) {
+    public ResponseEntity<CalendarDtoExtended> createCalendar(@Valid @RequestBody CalendarDto calendarDto) {
         log.info("REST request to create calendar: {}", calendarDto);
 
         Calendar model = calendarMapper.toModel(calendarDto);
+
         calendarService.addCalendar(model);
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -51,15 +53,17 @@ public class CalendarController {
     }
 
     @PutMapping("/{id}")
-    public void updateCalendar(@PathVariable UUID id, @Valid @RequestBody CalendarDTO calendarDto) {
+    public void updateCalendar(@PathVariable UUID id, @Valid @RequestBody CalendarDto calendarDto)
+            throws ServiceException {
         log.info("REST request to update calendar ID: {}", id);
 
-        Calendar model = calendarMapper.toModel(calendarDto);
+        Calendar model = calendarMapper.toModel(id, calendarDto);
         calendarService.updateCalendar(model);
     }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteCalendar(@PathVariable UUID id) {
+    public void deleteCalendar(@PathVariable UUID id) throws ServiceException {
         log.info("REST request to delete calendar ID: {}", id);
         calendarService.deleteCalendar(id);
     }

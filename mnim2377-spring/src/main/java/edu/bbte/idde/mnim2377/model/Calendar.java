@@ -22,8 +22,9 @@ public class Calendar extends BaseEntity {
         this.online = online;
     }
 
+    @Default
     public Calendar(UUID id, String address, String location, LocalDate date, Boolean online) {
-        super(id);
+        super(id != null ? id : UUID.randomUUID());
         this.address = address;
         this.location = location;
         this.date = date;
