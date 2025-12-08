@@ -41,9 +41,6 @@ public class CalendarServiceImplementation implements CalendarService {
         } catch (RepositoryException e) {
             log.warn("Update failed: {}", e.getMessage());
             throw new ServiceNotFoundException("Calendar not found for update", e);
-        } catch (Exception e) {
-            log.error("Unexpected error during update", e);
-            throw new ServiceException("Unexpected error during update", e);
         }
     }
 
@@ -55,9 +52,6 @@ public class CalendarServiceImplementation implements CalendarService {
         } catch (RepositoryException e) {
             log.warn("Delete failed: {}", e.getMessage());
             throw new ServiceNotFoundException("Calendar not found for deletion", e);
-        } catch (Exception e) {
-            log.error("Unexpected error during delete", e);
-            throw new ServiceException("Unexpected error during delete", e);
         }
     }
 

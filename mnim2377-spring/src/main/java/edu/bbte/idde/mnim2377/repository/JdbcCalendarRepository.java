@@ -19,6 +19,16 @@ public class JdbcCalendarRepository implements CalendarRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
+    private final RowMapper<Calendar> calendarRowMapper = (rs, rowNum) -> {
+        return new Calendar(
+                UUID.fromString(rs.getString("id")), // Mivel UUID az ID
+                rs.getString("address"),
+                rs.getString("location"),
+                rs.getDate("date").toLocalDate(),
+                rs.getBoolean("is_online")
+        );
+    };
+
     public JdbcCalendarRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -88,14 +98,4 @@ public class JdbcCalendarRepository implements CalendarRepository {
             return Optional.of(calendars.getFirst());
         }
     }
-
-    private final RowMapper<Calendar> calendarRowMapper = (rs, rowNum) -> {
-        return new Calendar(
-                UUID.fromString(rs.getString("id")), // Mivel UUID az ID
-                rs.getString("address"),
-                rs.getString("location"),
-                rs.getDate("date").toLocalDate(),
-                rs.getBoolean("is_online")
-        );
-    };
 }
