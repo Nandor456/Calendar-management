@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -97,5 +98,14 @@ public class JdbcCalendarRepository implements CalendarRepository {
             log.info("Successfully fetched calendar with ID: {}", id);
             return Optional.of(calendars.getFirst());
         }
+    }
+
+    @Override
+    public List<Calendar> findByDate(LocalDate date) {
+        String sql = "SELECT * FROM calendar WHERE date = ?";
+        log.info("Fetching calendars with date: {}", date);
+        List<Calendar> calendars = jdbcTemplate.query(sql, calendarRowMapper, java.sql.Date.valueOf(date));
+        log.info("Successfully fetched {} calendars with date: {}", calendars.size(), date);
+        return calendars;
     }
 }

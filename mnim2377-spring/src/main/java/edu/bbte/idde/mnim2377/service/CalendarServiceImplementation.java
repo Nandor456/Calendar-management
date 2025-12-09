@@ -9,6 +9,7 @@ import edu.bbte.idde.mnim2377.service.exception.ServiceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -61,5 +62,18 @@ public class CalendarServiceImplementation implements CalendarService {
 
         return calendarRepository.findById(id)
                 .orElseThrow(() -> new ServiceNotFoundException("Calendar not found with ID: " + id));
+    }
+
+    @Override
+    public List<Calendar> getCalendarsByDate(LocalDate date) throws ServiceException {
+        log.info("Fetching calendars for date: {}", date);
+        if (date == null) {
+            throw new ServiceException("Date parameter cannot be null", new IllegalArgumentException("Null date"));
+        }
+        List<Calendar> calendars = calendarRepository.findByDate(date);
+        if (calendars.isEmpty()) {
+            throw new ServiceNotFoundException("No calendars found for date: " + date);
+        }
+        return calendars;
     }
 }

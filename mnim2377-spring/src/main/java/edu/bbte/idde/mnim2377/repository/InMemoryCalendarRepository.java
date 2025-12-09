@@ -52,4 +52,15 @@ public class InMemoryCalendarRepository implements CalendarRepository {
         }
         return Optional.of(calendarMap.get(id));
     }
+
+    @Override
+    public List<Calendar> findByDate(java.time.LocalDate date) {
+        List<Calendar> result = new ArrayList<>();
+        for (Calendar calendar : calendarMap.values()) {
+            if (calendar.getDate().equals(date)) {
+                result.add(calendar);
+            }
+        }
+        return result;
+    }
 }

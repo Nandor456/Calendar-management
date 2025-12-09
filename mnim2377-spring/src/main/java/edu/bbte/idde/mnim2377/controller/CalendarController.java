@@ -7,17 +7,21 @@ import edu.bbte.idde.mnim2377.mapper.CalendarMapper;
 import edu.bbte.idde.mnim2377.model.Calendar;
 import edu.bbte.idde.mnim2377.service.CalendarService;
 import edu.bbte.idde.mnim2377.service.exception.ServiceException;
+import edu.bbte.idde.mnim2377.service.exception.ServiceNotFoundException;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/calendars")
+@CrossOrigin(origins = "http://localhost:5173")
 @Slf4j
 public class CalendarController {
     private final CalendarService calendarService;
@@ -66,5 +70,28 @@ public class CalendarController {
     public void deleteCalendar(@PathVariable UUID id) throws ServiceException {
         log.info("REST request to delete calendar ID: {}", id);
         calendarService.deleteCalendar(id);
+    }
+
+    @GetMapping("/filter")
+    public List<CalendarDtoExtended> getAllCalendarsWithFilter(@RequestParam("date")
+                                                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+                                                                   LocalDate date) throws ServiceException {
+
+        log.info("REST request to get all calendars with filter");
+        return calendarMapper.toDtos(calendarService.getCalendarsByDate(date));
+    }
+
+    @ExceptionHandler(ServiceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String handleServiceNotFoundException(ServiceNotFoundException ex) {
+        log.warn("Resource not found: {}", ex.getMessage());
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(ServiceException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public String handleServiceException(ServiceException ex) {
+        log.error("Internal server error: {}", ex.getMessage());
+        return ex.getMessage();
     }
 }

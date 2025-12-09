@@ -4,6 +4,7 @@ package edu.bbte.idde.mnim2377.service;
 import edu.bbte.idde.mnim2377.model.Calendar;
 import edu.bbte.idde.mnim2377.service.exception.ServiceException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,4 +18,6 @@ public interface CalendarService {
     void deleteCalendar(UUID id) throws ServiceException;
 
     Calendar getCalendarById(UUID id) throws ServiceException;
+
+    List<Calendar> getCalendarsByDate(LocalDate date) throws ServiceException;
 }
