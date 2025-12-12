@@ -3,6 +3,7 @@ package edu.bbte.idde.mnim2377.controller;
 
 import edu.bbte.idde.mnim2377.dto.CalendarDto;
 import edu.bbte.idde.mnim2377.dto.CalendarDtoExtended;
+import edu.bbte.idde.mnim2377.dto.ErrorDto;
 import edu.bbte.idde.mnim2377.mapper.CalendarMapper;
 import edu.bbte.idde.mnim2377.model.Calendar;
 import edu.bbte.idde.mnim2377.service.CalendarService;
@@ -82,16 +83,25 @@ public class CalendarController {
     }
 
     @ExceptionHandler(ServiceNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String handleServiceNotFoundException(ServiceNotFoundException ex) {
+    public ResponseEntity<ErrorDto> handleServiceNotFoundException(ServiceNotFoundException ex) {
         log.warn("Resource not found: {}", ex.getMessage());
-        return ex.getMessage();
+        ErrorDto body = new ErrorDto(
+                ex.getMessage(),
+                "NOT_FOUND",
+                HttpStatus.NOT_FOUND.value()
+        );
+        return new ResponseEntity<>(body, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(ServiceException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public String handleServiceException(ServiceException ex) {
+    public ResponseEntity<ErrorDto> handleServiceException(ServiceException ex) {
         log.error("Internal server error: {}", ex.getMessage());
-        return ex.getMessage();
+        ErrorDto body = new ErrorDto(
+                ex.getMessage(),
+                "INTERNAL_SERVER_ERROR",
+                HttpStatus.INTERNAL_SERVER_ERROR.value()
+        );
+        return new ResponseEntity<>(body, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
