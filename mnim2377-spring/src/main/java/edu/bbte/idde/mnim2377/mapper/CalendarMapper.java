@@ -20,5 +20,17 @@ public interface CalendarMapper {
     @Mapping(target = "id", ignore = true)
     Calendar toModel(CalendarDto calendarDto);
 
-    Calendar toModel(UUID id, CalendarDto calendarDto);
+    //Must preserve ID from path
+    default Calendar toModel(UUID id, CalendarDto calendarDto) {
+        if (calendarDto == null) {
+            return null;
+        }
+        return new Calendar(
+                id,
+                calendarDto.getAddress(),
+                calendarDto.getLocation(),
+                calendarDto.getDate(),
+                calendarDto.getOnline()
+        );
+    }
 }
