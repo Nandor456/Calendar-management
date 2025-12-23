@@ -1,0 +1,7 @@
+package edu.bbte.idde.mnim2377.repository.exception;
+
+public class RepositoryException extends RuntimeException {
+    public RepositoryException(String message) {
+        super(message);
+    }
+}

@@ -219,7 +219,7 @@ public class CalendarJson extends HttpServlet {
             Calendar calendar = new Calendar(data.address, data.location, data.date, data.online);
             service.addCalendar(calendar);
             res.setStatus(HttpServletResponse.SC_CREATED);
-            mapper.writeValue(res.getWriter(), "Calendar created successfully");
+            mapper.writeValue(res.getWriter(), calendar);
 
         } catch (MismatchedInputException e) {
             res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
