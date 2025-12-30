@@ -1,8 +1,8 @@
 package edu.bbte.idde.mnim2377.controller;
 
 
-import edu.bbte.idde.mnim2377.dto.CalendarDto;
-import edu.bbte.idde.mnim2377.dto.CalendarDtoExtended;
+import edu.bbte.idde.mnim2377.dto.CalendarDtoIn;
+import edu.bbte.idde.mnim2377.dto.CalendarDtoOut;
 import edu.bbte.idde.mnim2377.dto.ErrorDto;
 import edu.bbte.idde.mnim2377.mapper.CalendarMapper;
 import edu.bbte.idde.mnim2377.model.Calendar;
@@ -34,19 +34,25 @@ public class CalendarController {
     }
 
     @GetMapping
-    public List<CalendarDtoExtended> getAllCalendars() {
-        log.info("REST request to get all calendars");
-        return calendarMapper.toDtos(calendarService.getAllCalendars());
+    public List<CalendarDtoOut> getCalendars(@RequestParam(name = "date", required = false)
+                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) throws ServiceException {
+        if (date != null) {
+            log.info("REST request to get calendars with date filter: {}", date);
+            return calendarMapper.toDtos(calendarService.getCalendarsByDate(date));
+        } else {
+            log.info("REST request to get all calendars");
+            return calendarMapper.toDtos(calendarService.getAllCalendars());
+        }
     }
 
     @GetMapping("/{id}")
-    public CalendarDtoExtended getCalendarById(@PathVariable UUID id) throws ServiceException {
+    public CalendarDtoOut getCalendarById(@PathVariable UUID id) throws ServiceException {
         log.info("REST request to get calendar by ID: {}", id);
         return calendarMapper.toDto(calendarService.getCalendarById(id));
     }
 
     @PostMapping
-    public ResponseEntity<CalendarDtoExtended> createCalendar(@Valid @RequestBody CalendarDto calendarDto) {
+    public ResponseEntity<CalendarDtoOut> createCalendar(@Valid @RequestBody CalendarDtoIn calendarDto) {
         log.info("REST request to create calendar: {}", calendarDto);
 
         Calendar model = calendarMapper.toModel(calendarDto);
@@ -58,7 +64,7 @@ public class CalendarController {
     }
 
     @PutMapping("/{id}")
-    public void updateCalendar(@PathVariable UUID id, @Valid @RequestBody CalendarDto calendarDto)
+    public void updateCalendar(@PathVariable UUID id, @Valid @RequestBody CalendarDtoIn calendarDto)
             throws ServiceException {
         log.info("REST request to update calendar ID: {}", id);
 
@@ -71,15 +77,6 @@ public class CalendarController {
     public void deleteCalendar(@PathVariable UUID id) throws ServiceException {
         log.info("REST request to delete calendar ID: {}", id);
         calendarService.deleteCalendar(id);
-    }
-
-    @GetMapping("/filter")
-    public List<CalendarDtoExtended> getAllCalendarsWithFilter(@RequestParam("date")
-                                                                   @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-                                                                   LocalDate date) throws ServiceException {
-
-        log.info("REST request to get all calendars with filter");
-        return calendarMapper.toDtos(calendarService.getCalendarsByDate(date));
     }
 
     @ExceptionHandler(ServiceNotFoundException.class)
