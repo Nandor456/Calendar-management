@@ -7,7 +7,7 @@ import lombok.Data;
 import java.time.LocalDate;
 
 @Data
-public class CalendarDto {
+public class CalendarDtoIn {
 
     @NotBlank(message = "Address cannot be blank")
     private String address;
