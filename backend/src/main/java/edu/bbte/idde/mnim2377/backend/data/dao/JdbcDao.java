@@ -30,7 +30,7 @@ public class JdbcDao implements CalendarDao {
             return calendars;
         } catch (SQLException e) {
             logger.error("Failed to fetch all calendars", e);
-            throw new DatabaseException("Failed to connect to database", e);
+            throw new DatabaseException("Failed to fetch all calendars", e);
         }
 
     }
@@ -42,7 +42,7 @@ public class JdbcDao implements CalendarDao {
 
         try (Connection conn = DataSourceProvider.getDataSource().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, id.toString());
+            pstmt.setObject(1, id);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
@@ -66,7 +66,7 @@ public class JdbcDao implements CalendarDao {
         String sql = "INSERT INTO calendar (id, address, location, date, is_online) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DataSourceProvider.getDataSource().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, calendar.getId().toString());
+            pstmt.setObject(1, calendar.getId());
             pstmt.setString(2, calendar.getAddress());
             pstmt.setString(3, calendar.getLocation());
             pstmt.setDate(4, Date.valueOf(calendar.getDate()));
@@ -77,7 +77,7 @@ public class JdbcDao implements CalendarDao {
 
         } catch (SQLException e) {
             logger.error("Failed to create calendar with ID: {}", calendar.getId(), e);
-            throw new DatabaseException("Failed to connect to database", e);
+            throw new DatabaseException("Failed to create calendar with ID: " + calendar.getId(), e);
         }
     }
 
@@ -91,7 +91,7 @@ public class JdbcDao implements CalendarDao {
             pstmt.setString(2, calendar.getLocation());
             pstmt.setDate(3, Date.valueOf(calendar.getDate()));
             pstmt.setBoolean(4, calendar.isOnline());
-            pstmt.setString(5, calendar.getId().toString());
+            pstmt.setObject(5, calendar.getId());
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows == 0) {
                 logger.warn("Cannot update: calendar with ID {} not found", calendar.getId());
@@ -100,7 +100,7 @@ public class JdbcDao implements CalendarDao {
             logger.info("Successfully updated calendar with ID: {}", calendar.getId());
         } catch (SQLException e) {
             logger.error("Failed to update calendar with ID: {}", calendar.getId(), e);
-            throw new DatabaseException("Failed to connect to database", e);
+            throw new DatabaseException("Failed to update calendar with ID: " + calendar.getId(), e);
         }
 
     }
@@ -111,7 +111,7 @@ public class JdbcDao implements CalendarDao {
         String sql = "DELETE FROM calendar WHERE id = ?";
         try (Connection conn = DataSourceProvider.getDataSource().getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, id.toString());
+            pstmt.setObject(1, id);
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows == 0) {
                 logger.warn("Cannot delete: calendar with ID {} not found", id);
@@ -121,7 +121,7 @@ public class JdbcDao implements CalendarDao {
 
         } catch (SQLException e) {
             logger.error("Failed to delete calendar with ID: {}", id, e);
-            throw new DatabaseException("Failed to connect to database", e);
+            throw new DatabaseException("Failed to delete calendar with ID: " + id, e);
         }
     }
 

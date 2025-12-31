@@ -11,7 +11,7 @@ public class DatabaseInitializer {
     public static void initializeDatabase() throws DatabaseException {
         String sql =
                 "CREATE TABLE IF NOT EXISTS calendar ("
-                + "  id VARCHAR(64) PRIMARY KEY,"
+                + "  id UUID PRIMARY KEY,"
                 + "  address TEXT NOT NULL,"
                 + "  location TEXT NOT NULL,"
                 + "  date DATE NOT NULL,"
