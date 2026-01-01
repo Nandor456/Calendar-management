@@ -31,6 +31,9 @@ dependencies {
     // Adatbázis driver
     runtimeOnly group: 'org.postgresql', name: 'postgresql', version: '42.7.2'
 
+    // Used by tests to avoid requiring an external DB.
+    testRuntimeOnly 'com.h2database:h2'
+
     // Lombok
     compileOnly group: 'org.projectlombok', name: 'lombok'
     annotationProcessor group: 'org.projectlombok', name: 'lombok'

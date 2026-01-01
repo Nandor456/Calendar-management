@@ -31,6 +31,9 @@ public class CalendarServiceImplementation implements CalendarService {
     @Override
     public void addCalendar(Calendar calendar) {
         log.info("Adding new calendar");
+        if (calendar.getId() == null) {
+            calendar.setId(UUID.randomUUID());
+        }
         calendarRepository.create(calendar);
     }
 
