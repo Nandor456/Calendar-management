@@ -22,7 +22,7 @@ public class JdbcCalendarRepository implements CalendarRepository {
 
     private final RowMapper<Calendar> calendarRowMapper = (rs, rowNum) -> {
         return new Calendar(
-                UUID.fromString(rs.getString("id")), // Mivel UUID az ID
+                UUID.fromString(rs.getString("id")),
                 rs.getString("address"),
                 rs.getString("location"),
                 rs.getDate("date").toLocalDate(),
@@ -48,7 +48,7 @@ public class JdbcCalendarRepository implements CalendarRepository {
         String sql = "INSERT INTO calendar (id, address, location, date, is_online) VALUES (?, ?, ?, ?, ?)";
         log.info("Creating calendar with ID: {}", calendar.getId());
         jdbcTemplate.update(sql,
-                calendar.getId().toString(),
+                calendar.getId(),
                 calendar.getAddress(),
                 calendar.getLocation(),
                 java.sql.Date.valueOf(calendar.getDate()),
@@ -67,7 +67,7 @@ public class JdbcCalendarRepository implements CalendarRepository {
                 calendar.getLocation(),
                 java.sql.Date.valueOf(calendar.getDate()),
                 calendar.getOnline(),
-                calendar.getId().toString()
+                calendar.getId()
         );
         if (rowsAffected == 0) {
             log.warn("No calendar found with ID: {}", calendar.getId());
@@ -79,7 +79,7 @@ public class JdbcCalendarRepository implements CalendarRepository {
     public void deleteById(UUID id) throws RepositoryException {
         String sql = "DELETE FROM calendar WHERE id = ?";
         log.info("Deleting calendar with ID: {}", id);
-        int rowsAffected = jdbcTemplate.update(sql, id.toString());
+        int rowsAffected = jdbcTemplate.update(sql, id);
         if (rowsAffected == 0) {
             log.warn("No calendar found with ID: {}", id);
             throw new RepositoryException("No calendar found with ID: " + id);
@@ -90,7 +90,7 @@ public class JdbcCalendarRepository implements CalendarRepository {
     public Optional<Calendar> findById(UUID id) {
         String sql = "SELECT * FROM calendar WHERE id = ?";
         log.info("Fetching calendar with ID: {}", id);
-        List<Calendar> calendars = jdbcTemplate.query(sql, calendarRowMapper, id.toString());
+        List<Calendar> calendars = jdbcTemplate.query(sql, calendarRowMapper, id);
         if (calendars.isEmpty()) {
             log.warn("No calendar found with ID: {}", id);
             return Optional.empty();

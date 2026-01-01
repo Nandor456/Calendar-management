@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS calendar (
-    id CHAR(36) PRIMARY KEY,
+    id UUID PRIMARY KEY,
     address VARCHAR(100),
     location VARCHAR(100),
     date DATE,
