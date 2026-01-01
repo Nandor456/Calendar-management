@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 @Repository
 @Profile("jpa")
 @Slf4j
@@ -64,4 +65,3 @@ public class JpaCalendarRepository implements CalendarRepository {
         return springDataRepo.findByDate(date);
     }
 }
-

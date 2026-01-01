@@ -34,8 +34,10 @@ public class CalendarController {
     }
 
     @GetMapping
-    public List<CalendarDtoOut> getCalendars(@RequestParam(name = "date", required = false)
-                                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) throws ServiceException {
+    public List<CalendarDtoOut> getCalendars(
+            @RequestParam(name = "date", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    ) throws ServiceException {
         if (date != null) {
             log.info("REST request to get calendars with date filter: {}", date);
             return calendarMapper.toDtos(calendarService.getCalendarsByDate(date));
