@@ -4,8 +4,12 @@ package edu.bbte.idde.mnim2377.controller;
 import edu.bbte.idde.mnim2377.dto.CalendarDtoIn;
 import edu.bbte.idde.mnim2377.dto.CalendarDtoOut;
 import edu.bbte.idde.mnim2377.dto.ErrorDto;
+import edu.bbte.idde.mnim2377.dto.EventDtoIn;
+import edu.bbte.idde.mnim2377.dto.EventDtoOut;
 import edu.bbte.idde.mnim2377.mapper.CalendarMapper;
+import edu.bbte.idde.mnim2377.mapper.EventMapper;
 import edu.bbte.idde.mnim2377.model.Calendar;
+import edu.bbte.idde.mnim2377.model.Event;
 import edu.bbte.idde.mnim2377.service.CalendarService;
 import edu.bbte.idde.mnim2377.service.exception.ServiceException;
 import edu.bbte.idde.mnim2377.service.exception.ServiceNotFoundException;
@@ -27,10 +31,12 @@ import java.util.UUID;
 public class CalendarController {
     private final CalendarService calendarService;
     private final CalendarMapper calendarMapper;
+    private final EventMapper eventMapper;
 
-    public CalendarController(CalendarService calendarService, CalendarMapper calendarMapper) {
+    public CalendarController(CalendarService calendarService, CalendarMapper calendarMapper, EventMapper eventMapper) {
         this.calendarService = calendarService;
         this.calendarMapper = calendarMapper;
+        this.eventMapper = eventMapper;
     }
 
     @GetMapping
@@ -79,6 +85,34 @@ public class CalendarController {
     public void deleteCalendar(@PathVariable UUID id) throws ServiceException {
         log.info("REST request to delete calendar ID: {}", id);
         calendarService.deleteCalendar(id);
+    }
+
+    @GetMapping("/{calendarId}/events")
+    public List<EventDtoOut> getEventsForCalendar(@PathVariable UUID calendarId) throws ServiceException {
+        log.info("REST request to get events for calendar ID: {}", calendarId);
+        return eventMapper.toDtos(calendarService.getEventsForCalendar(calendarId));
+    }
+
+    @PostMapping("/{calendarId}/events")
+    public ResponseEntity<EventDtoOut> addEventToCalendar(
+            @PathVariable UUID calendarId,
+            @Valid @RequestBody EventDtoIn eventDto
+    ) throws ServiceException {
+        log.info("REST request to add event to calendar ID: {}", calendarId);
+
+        Event event = eventMapper.toModel(eventDto);
+        Event created = calendarService.addEventToCalendar(calendarId, event);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(eventMapper.toDto(created));
+    }
+
+    @DeleteMapping("/{calendarId}/events/{eventId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteEventFromCalendar(@PathVariable UUID calendarId, @PathVariable UUID eventId)
+            throws ServiceException {
+        log.info("REST request to delete event ID: {} from calendar ID: {}", eventId, calendarId);
+        calendarService.deleteEventFromCalendar(calendarId, eventId);
     }
 
     @ExceptionHandler(ServiceNotFoundException.class)

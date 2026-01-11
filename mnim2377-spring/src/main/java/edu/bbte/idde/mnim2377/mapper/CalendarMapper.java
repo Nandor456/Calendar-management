@@ -18,6 +18,7 @@ public interface CalendarMapper {
 
     // Used for CREATE (POST) - No ID in input
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "events", ignore = true)
     Calendar toModel(CalendarDtoIn calendarDto);
 
     //Must preserve ID from path
