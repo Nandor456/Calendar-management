@@ -4,7 +4,6 @@ package edu.bbte.idde.mnim2377.service;
 import edu.bbte.idde.mnim2377.model.Calendar;
 import edu.bbte.idde.mnim2377.model.Event;
 import edu.bbte.idde.mnim2377.repository.CalendarRepository;
-import edu.bbte.idde.mnim2377.repository.JpaCalendarRepository;
 import edu.bbte.idde.mnim2377.repository.exception.RepositoryException;
 import edu.bbte.idde.mnim2377.service.exception.ServiceException;
 import edu.bbte.idde.mnim2377.service.exception.ServiceNotFoundException;
@@ -86,13 +85,8 @@ public class CalendarServiceImplementation implements CalendarService {
     @Override
     @Transactional(readOnly = true)
     public List<Event> getEventsForCalendar(UUID calendarId) throws ServiceException {
-        Calendar calendar;
-        if (calendarRepository instanceof JpaCalendarRepository jpaRepo) {
-            calendar = jpaRepo.findWithEventsById(calendarId)
-                    .orElseThrow(() -> new ServiceNotFoundException("Calendar not found with ID: " + calendarId));
-        } else {
-            calendar = getCalendarById(calendarId);
-        }
+        Calendar calendar = calendarRepository.findWithEventsById(calendarId)
+                .orElseThrow(() -> new ServiceNotFoundException("Calendar not found with ID: " + calendarId));
         return calendar.getEvents();
     }
 
@@ -103,13 +97,8 @@ public class CalendarServiceImplementation implements CalendarService {
             throw new ServiceException("Event cannot be null", new IllegalArgumentException("Null event"));
         }
 
-        Calendar calendar;
-        if (calendarRepository instanceof JpaCalendarRepository jpaRepo) {
-            calendar = jpaRepo.findWithEventsById(calendarId)
-                    .orElseThrow(() -> new ServiceNotFoundException("Calendar not found with ID: " + calendarId));
-        } else {
-            calendar = getCalendarById(calendarId);
-        }
+        Calendar calendar = calendarRepository.findWithEventsById(calendarId)
+                .orElseThrow(() -> new ServiceNotFoundException("Calendar not found with ID: " + calendarId));
 
         if (event.getId() == null) {
             event.setId(UUID.randomUUID());
@@ -129,13 +118,8 @@ public class CalendarServiceImplementation implements CalendarService {
     @Override
     @Transactional
     public void deleteEventFromCalendar(UUID calendarId, UUID eventId) throws ServiceException {
-        Calendar calendar;
-        if (calendarRepository instanceof JpaCalendarRepository jpaRepo) {
-            calendar = jpaRepo.findWithEventsById(calendarId)
-                    .orElseThrow(() -> new ServiceNotFoundException("Calendar not found with ID: " + calendarId));
-        } else {
-            calendar = getCalendarById(calendarId);
-        }
+        Calendar calendar = calendarRepository.findWithEventsById(calendarId)
+                .orElseThrow(() -> new ServiceNotFoundException("Calendar not found with ID: " + calendarId));
 
         boolean removed = calendar.removeEventById(eventId);
         if (!removed) {

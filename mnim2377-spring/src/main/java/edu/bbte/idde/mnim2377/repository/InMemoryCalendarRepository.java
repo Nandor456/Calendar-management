@@ -54,6 +54,11 @@ public class InMemoryCalendarRepository implements CalendarRepository {
     }
 
     @Override
+    public Optional<Calendar> findWithEventsById(UUID id) {
+        return findById(id);
+    }
+
+    @Override
     public List<Calendar> findByDate(java.time.LocalDate date) {
         List<Calendar> result = new ArrayList<>();
         for (Calendar calendar : calendarMap.values()) {

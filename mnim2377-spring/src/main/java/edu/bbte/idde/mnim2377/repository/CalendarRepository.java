@@ -19,5 +19,7 @@ public interface CalendarRepository {
 
     Optional<Calendar> findById(UUID id);
 
+    Optional<Calendar> findWithEventsById(UUID id);
+
     List<Calendar> findByDate(LocalDate date);
 }

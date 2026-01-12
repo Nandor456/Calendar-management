@@ -65,6 +65,7 @@ public class JpaCalendarRepository implements CalendarRepository {
         return springDataRepo.findByDate(date);
     }
 
+    @Override
     public Optional<Calendar> findWithEventsById(UUID id) {
         return springDataRepo.findWithEventsById(id);
     }
