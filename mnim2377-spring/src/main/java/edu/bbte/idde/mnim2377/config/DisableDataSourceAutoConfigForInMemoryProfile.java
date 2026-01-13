@@ -8,10 +8,10 @@ import org.springframework.context.annotation.Profile;
 
 @Configuration
 @Profile("in-memory")
-@ImportAutoConfiguration(exclude = {
+@SuppressWarnings({"checkstyle:Indentation"})
+@ImportAutoConfiguration(exclude = { 
         DataSourceAutoConfiguration.class,
-        DataSourceTransactionManagerAutoConfiguration.class
-})
+        DataSourceTransactionManagerAutoConfiguration.class })
 public class DisableDataSourceAutoConfigForInMemoryProfile {
 }
 

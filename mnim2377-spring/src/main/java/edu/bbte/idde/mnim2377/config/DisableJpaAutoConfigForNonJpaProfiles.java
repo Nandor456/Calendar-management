@@ -8,9 +8,9 @@ import org.springframework.context.annotation.Profile;
 
 @Configuration
 @Profile("jdbc")
-@ImportAutoConfiguration(exclude = {
-        HibernateJpaAutoConfiguration.class,
-        JpaRepositoriesAutoConfiguration.class
-})
+@SuppressWarnings({"checkstyle:Indentation"})
+@ImportAutoConfiguration(
+        exclude = {HibernateJpaAutoConfiguration.class,
+        JpaRepositoriesAutoConfiguration.class })
 public class DisableJpaAutoConfigForNonJpaProfiles {
 }

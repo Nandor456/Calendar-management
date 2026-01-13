@@ -32,7 +32,7 @@ public class InMemoryCalendarRepository implements CalendarRepository {
     @Override
     public void deleteById(UUID id) throws RepositoryException {
         if (!calendarMap.containsKey(id)) {
-                throw new RepositoryException("Cant delete: ID:" + id + "cant be found");
+            throw new RepositoryException("Cant delete: ID:" + id + "cant be found");
         }
         calendarMap.remove(id);
     }

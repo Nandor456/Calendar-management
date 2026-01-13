@@ -13,6 +13,7 @@ import java.util.UUID;
 
 @Repository
 public interface SpringDataCalendarJpaRepository extends JpaRepository<Calendar, UUID>, CalendarRepository {
+    @Override
     List<Calendar> findByDate(LocalDate date);
 
     @Override
