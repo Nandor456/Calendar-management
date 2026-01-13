@@ -24,23 +24,15 @@ public class InMemoryCalendarRepository implements CalendarRepository {
     }
 
     @Override
-    public Calendar create(Calendar calendar) {
+    public Calendar save(Calendar calendar) {
         calendarMap.put(calendar.getId(), calendar);
         return calendar;
     }
 
     @Override
-    public void update(Calendar calendar) throws RepositoryException {
-        if (!calendarMap.containsKey(calendar.getId())) {
-            throw new RepositoryException("Cant update: ID:" + calendar.getId() + "cant be found");
-        }
-        calendarMap.put(calendar.getId(), calendar);
-    }
-
-    @Override
     public void deleteById(UUID id) throws RepositoryException {
         if (!calendarMap.containsKey(id)) {
-            throw new RepositoryException("Cant delete: ID:" + id + "cant be found");
+                throw new RepositoryException("Cant delete: ID:" + id + "cant be found");
         }
         calendarMap.remove(id);
     }

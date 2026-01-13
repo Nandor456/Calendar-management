@@ -37,7 +37,7 @@ public class Calendar extends BaseEntity {
     @OneToMany(
             mappedBy = "calendar",
             fetch = FetchType.LAZY,
-            cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE},
+            cascade = {CascadeType.ALL},
             orphanRemoval = true
     )
     private List<Event> events = new ArrayList<>();

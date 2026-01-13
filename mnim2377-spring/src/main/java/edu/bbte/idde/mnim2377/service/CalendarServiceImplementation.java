@@ -33,17 +33,18 @@ public class CalendarServiceImplementation implements CalendarService {
     @Override
     public void addCalendar(Calendar calendar) {
         log.info("Adding new calendar");
-        if (calendar.getId() == null) {
-            calendar.setId(UUID.randomUUID());
-        }
-        calendarRepository.create(calendar);
+        calendarRepository.save(calendar);
     }
 
     @Override
     public void updateCalendar(Calendar calendar) throws ServiceException {
         try {
+            if (calendarRepository.findById(calendar.getId()).isEmpty()) {
+                log.warn("Update failed: Calendar with ID {} not found", calendar.getId());
+                throw new ServiceNotFoundException("Calendar not found for update with ID: " + calendar.getId());
+            }
             log.info("Updating calendar with ID: {}", calendar.getId());
-            calendarRepository.update(calendar);
+            calendarRepository.save(calendar);
         } catch (RepositoryException e) {
             log.warn("Update failed: {}", e.getMessage());
             throw new ServiceNotFoundException("Calendar not found for update", e);
@@ -107,7 +108,7 @@ public class CalendarServiceImplementation implements CalendarService {
         calendar.addEvent(event);
 
         try {
-            calendarRepository.update(calendar);
+            calendarRepository.save(calendar);
         } catch (RepositoryException e) {
             throw new ServiceException("Failed to persist event for calendar", e);
         }
@@ -127,7 +128,7 @@ public class CalendarServiceImplementation implements CalendarService {
         }
 
         try {
-            calendarRepository.update(calendar);
+            calendarRepository.save(calendar);
         } catch (RepositoryException e) {
             throw new ServiceException("Failed to delete event from calendar", e);
         }

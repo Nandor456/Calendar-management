@@ -1,6 +1,7 @@
 package edu.bbte.idde.mnim2377.repository.jpa;
 
 import edu.bbte.idde.mnim2377.model.Calendar;
+import edu.bbte.idde.mnim2377.repository.CalendarRepository;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -11,9 +12,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface SpringDataCalendarJpaRepository extends JpaRepository<Calendar, UUID> {
+public interface SpringDataCalendarJpaRepository extends JpaRepository<Calendar, UUID>, CalendarRepository {
     List<Calendar> findByDate(LocalDate date);
 
-    @EntityGraph(attributePaths = "events")
+    @Override
+    @EntityGraph(attributePaths = "events") //join fetch for events
     Optional<Calendar> findWithEventsById(UUID id);
 }

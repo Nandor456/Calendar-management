@@ -163,46 +163,36 @@ public class JdbcCalendarRepository implements CalendarRepository {
     }
 
     @Override
-    public Calendar create(Calendar calendar) {
-        String sql = "INSERT INTO calendar (id, address, location, date, is_online) VALUES (?, ?, ?, ?, ?)";
-        log.info("Creating calendar with ID: {}", calendar.getId());
-        jdbcTemplate.update(sql,
-                calendar.getId(),
-                calendar.getAddress(),
-                calendar.getLocation(),
-                java.sql.Date.valueOf(calendar.getDate()),
-                calendar.getOnline()
-        );
+    public Calendar save(Calendar calendar) {
 
-        // Persist aggregate children
-        upsertEventsForCalendar(calendar);
-
-        log.info("Successfully created calendar with ID: {}", calendar.getId());
-        return calendar;
-    }
-
-    @Override
-    public void update(Calendar calendar) throws RepositoryException {
-        String sql = "UPDATE calendar SET address = ?, location = ?, date = ?, is_online = ? WHERE id = ?";
-        log.info("Updating calendar with ID: {}", calendar.getId());
-        int rowsAffected = jdbcTemplate.update(sql,
+        // Először megpróbáljuk frissíteni
+        String updateSql = "UPDATE calendar SET address = ?, location = ?, date = ?, is_online = ? WHERE id = ?";
+        int rows = jdbcTemplate.update(updateSql,
                 calendar.getAddress(),
                 calendar.getLocation(),
                 java.sql.Date.valueOf(calendar.getDate()),
                 calendar.getOnline(),
                 calendar.getId()
         );
-        if (rowsAffected == 0) {
-            log.warn("No calendar found with ID: {}", calendar.getId());
-            throw new RepositoryException("No calendar found with ID: " + calendar.getId());
+
+        if (rows == 0) {
+            String insertSql = "INSERT INTO calendar (id, address, location, date, is_online) VALUES (?, ?, ?, ?, ?)";
+            jdbcTemplate.update(insertSql,
+                    calendar.getId(),
+                    calendar.getAddress(),
+                    calendar.getLocation(),
+                    java.sql.Date.valueOf(calendar.getDate()),
+                    calendar.getOnline()
+            );
         }
 
-        // Sync aggregate children
         upsertEventsForCalendar(calendar);
+
+        return calendar;
     }
 
     @Override
-    public void deleteById(UUID id) throws RepositoryException {
+    public void deleteById(UUID id) {
         // Delete children first to avoid FK issues
         jdbcTemplate.update("DELETE FROM event WHERE calendar_id = ?", id);
 
