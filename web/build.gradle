@@ -15,6 +15,9 @@ dependencies {
     implementation group: 'org.hibernate.validator', name: 'hibernate-validator', version: '9.1.0.Final'
     // https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf
     implementation group: 'org.thymeleaf', name: 'thymeleaf', version: '3.1.3.RELEASE'
+    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.20.1'
+    implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.20.1'
+
 }
 
 test {

@@ -3,9 +3,9 @@
     "implementation": "memory"
   },
   "database": {
-    "username" : "postgres",
-    "password": "Victus",
-    "url" : "jdbc:postgresql://localhost:5432/idde",
+    "username" : "idde_user",
+    "password": "idde_password",
+    "url" : "jdbc:postgresql://localhost:5434/idde_db",
     "driver" : "org.postgresql.Driver"
   }
 }

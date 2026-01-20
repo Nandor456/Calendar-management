@@ -1,24 +1,23 @@
 package edu.bbte.idde.mnim2377.model;
 
-import lombok.EqualsAndHashCode;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
-import lombok.ToString;
+import lombok.Setter;
 
-import java.util.Objects;
 import java.util.UUID;
 
+@MappedSuperclass
 @Getter
-@ToString(includeFieldNames = false)
-@EqualsAndHashCode(of = "id")
+@Setter
 public abstract class BaseEntity {
 
-    private final UUID id;
+    @Id
+    private UUID id;
 
-    public BaseEntity() {
-        this.id = UUID.randomUUID();
-    }
+    protected BaseEntity() {}
 
     protected BaseEntity(UUID id) {
-        this.id = Objects.requireNonNull(id, "id must not be null");
+        this.id = id;
     }
 }

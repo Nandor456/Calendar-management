@@ -5,14 +5,4 @@ subprojects {
     repositories {
         mavenCentral()
     }
-
-    dependencies {
-        // Logging API needed at compile time for LoggerFactory and Logger
-        implementation group: 'org.slf4j', name: 'slf4j-api', version: '2.0.17'
-        // Logging backend only needed at runtime
-        runtimeOnly group: 'ch.qos.logback', name: 'logback-classic', version: '1.5.21'
-        // Jackson used directly in source (ObjectMapper, modules) so needs compile scope
-        implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.20.1'
-        implementation group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.20.1'
-    }
 }

@@ -8,8 +8,9 @@ import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class CalendarDtoExtended extends CalendarDto {
+public class EventDtoOut extends EventDtoIn {
 
     @NotNull(message = "ID cannot be null")
     private UUID id;
 }
+

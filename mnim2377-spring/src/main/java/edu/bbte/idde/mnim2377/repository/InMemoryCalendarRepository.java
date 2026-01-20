@@ -24,17 +24,9 @@ public class InMemoryCalendarRepository implements CalendarRepository {
     }
 
     @Override
-    public Calendar create(Calendar calendar) {
+    public Calendar save(Calendar calendar) {
         calendarMap.put(calendar.getId(), calendar);
         return calendar;
-    }
-
-    @Override
-    public void update(Calendar calendar) throws RepositoryException {
-        if (!calendarMap.containsKey(calendar.getId())) {
-            throw new RepositoryException("Cant update: ID:" + calendar.getId() + "cant be found");
-        }
-        calendarMap.put(calendar.getId(), calendar);
     }
 
     @Override
@@ -51,6 +43,11 @@ public class InMemoryCalendarRepository implements CalendarRepository {
             throw new RepositoryException("Cant find: ID:" + id + "cant be found");
         }
         return Optional.of(calendarMap.get(id));
+    }
+
+    @Override
+    public Optional<Calendar> findWithEventsById(UUID id) {
+        return findById(id);
     }
 
     @Override
