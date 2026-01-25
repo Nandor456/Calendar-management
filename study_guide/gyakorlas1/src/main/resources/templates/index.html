@@ -1,0 +1,25 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Users</title>
+</head>
+<body>
+<h1>Users</h1>
+<table>
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Age</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="cal : ${users}">
+        <td th:text="${cal.name}">1</td>
+        <td th:text="${cal.age}">Sample</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
