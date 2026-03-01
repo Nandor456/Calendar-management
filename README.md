@@ -1,13 +1,4 @@
-Kornyezeti valtozo spring:
-SPRING_PROFILES_ACTIVE=dev ./gradlew bootRun
+# Calendar manager
 
--->
-@Autowired
-private Environment env;
-
-public void printVar() {
-System.out.println(env.getProperty("APP_GREETING_MESSAGE"));
-}
-
-------------------------------------------------------------------
+Multi-module Java web application using Servlets and Spring Boot.
 
